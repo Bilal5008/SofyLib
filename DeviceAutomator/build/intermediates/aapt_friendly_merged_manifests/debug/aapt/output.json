@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "applicationId": "com.lukekorth.deviceautomator",
+  "variantType": "LIBRARY",
+  "elements": [
+    {
+      "outputType": {
+        "type": "AAPT_FRIENDLY_MERGED_MANIFESTS"
+      },
+      "apkData": {
+        "type": "MAIN",
+        "splits": [],
+        "versionCode": 7,
+        "versionName": "1.1.0-SNAPSHOT",
+        "outputFile": "DeviceAutomator-debug.aar",
+        "fullName": "debug",
+        "baseName": "debug",
+        "dirName": ""
+      },
+      "path": "AndroidManifest.xml",
+      "properties": {
+        "packageId": "com.lukekorth.deviceautomator",
+        "split": ""
+      }
+    }
+  ]
+}

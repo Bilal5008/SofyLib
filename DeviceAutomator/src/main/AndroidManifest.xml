@@ -1,0 +1,5 @@
+<manifest xmlns:tools="http://schemas.android.com/tools"
+    package="com.lukekorth.deviceautomator">
+
+    <uses-sdk tools:overrideLibrary="com.lukekorth.deviceautomator" />
+</manifest>

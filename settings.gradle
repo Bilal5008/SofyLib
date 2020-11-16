@@ -1,0 +1,4 @@
+include ':uiautomata'
+include ':proxy'
+include ':app'
+rootProject.name = "My ProxyWithActivity"

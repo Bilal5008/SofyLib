@@ -1,0 +1,121 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+version = '1.1.0-SNAPSHOT'
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion '30.0.2'
+
+    defaultConfig {
+        minSdkVersion 18
+        targetSdkVersion 30
+        versionCode 7
+        versionName version
+
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+
+    lintOptions {
+        warning 'InvalidPackage'
+        textReport true
+        textOutput 'stdout'
+    }
+}
+
+dependencies {
+    api 'androidx.test.uiautomator:uiautomator:2.2.0'
+    api 'androidx.test:runner:1.3.0'
+    api 'androidx.test:rules:1.3.0'
+    api 'androidx.core:core:1.3.1'
+    api 'androidx.test.ext:junit:1.1.2'
+
+    androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
+
+    testImplementation 'org.robolectric:robolectric:4.3'
+    testImplementation 'org.mockito:mockito-core:2.28.2'
+}
+
+/* maven deploy + signing */
+task javadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    failOnError false
+}
+
+task javadocsJar(type: Jar, dependsOn: javadocs) {
+    classifier = 'javadoc'
+    from javadocs.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives javadocsJar
+    archives sourcesJar
+}
+
+signing {
+    required { !version.endsWith("SNAPSHOT") }
+    sign configurations.archives
+}
+
+def sonatypeUsername = System.env['SONATYPE_USERNAME']
+def sonatypePassword = System.env['SONATYPE_PASSWORD']
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+            snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.setArtifactId 'device-automator'
+
+            pom.project {
+                name 'device-automator'
+                groupId 'com.lukekorth'
+                version android.defaultConfig.versionName
+                packaging 'jar'
+                description 'An easy to use, Espresso like, syntax on top of the Android UI Automator testing framework'
+                url 'https://github.com/lkorth/device-automator'
+
+                scm {
+                    url 'scm:git@github.com:lkorth/device-automator.git'
+                    connection 'scm:git@github.com:lkorth/device-automator.git'
+                    developerConnection 'scm:git@github.com:lkorth/device-automator.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The MIT License (MIT)'
+                        url 'http://opensource.org/licenses/MIT'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'lkorth'
+                        name 'Luke Korth'
+                    }
+                }
+            }
+        }
+    }
+}
