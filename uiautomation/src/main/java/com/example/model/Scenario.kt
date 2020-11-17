@@ -19,10 +19,10 @@ class Scenario {
     var snapshotLocation: String? = null
     var snapshotLocation_before: String? = null
     var snapshotLocation_after: String? = null
-    var androidPerformanceMonitors: AndroidPerformanceMonitors? = null
+    var androidPerformanceMonitors: AndroidPerformanceMonitors? = ""
     var predictedActivityName: String? = null
     var actionIndex = 0
-    var componentList: String? = null
+    var componentList: String? = ""
     var performTime = 0
 
     constructor(

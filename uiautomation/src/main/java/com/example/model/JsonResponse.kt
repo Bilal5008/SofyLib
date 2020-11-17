@@ -12,9 +12,9 @@ class JsonResponse {
 
     @SerializedName("LiveTestCaseID")
     @Expose
-    private val liveTestCaseID: Int? = null
+    private val liveTestCaseID: Int? = 0
 
     @SerializedName("LiveTestCaseResultID")
     @Expose
-    private val liveTestCaseResultID: Int? = null
+    private val liveTestCaseResultID: Int? = 0
 }

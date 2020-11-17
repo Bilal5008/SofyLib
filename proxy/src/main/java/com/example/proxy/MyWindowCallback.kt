@@ -50,7 +50,7 @@ class MyWindowCallback() : Window.Callback {
     var mouseEventList: ArrayList<MouseEvent>? = null
     var mouseEventListFinal: ArrayList<MouseEvent>? = null
     var finalView: View? = null
-    var bounds: String? = null
+    var bounds: String? = "[0,0][0,0]"
     var uId: Int? = 0
     var focused: Boolean? = false
     var visible: Boolean? = false
@@ -93,17 +93,19 @@ class MyWindowCallback() : Window.Callback {
                     ((this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
                         0
                     ) as? ViewGroup)?.get(i)
+
+
                 if (finalView is Button) {
                     addOnTouchListener(finalView as Button, i, activity)
-                }
-                else if (finalView is EditText) {
+                } else if (finalView is EditText) {
                     addOnTouchListenerForEditText(finalView as EditText, i, activity)
                 }
                  if (finalView is EditText) {
                     addSetTextListener(finalView as EditText, i, activity)
-                } else if (finalView is TextView) {
-                    addTextViewListener(finalView as TextView, i, activity)
                 }
+//                 else if (finalView is TextView) {
+//                    addTextViewListener(finalView as TextView, i, activity)
+//                }
                 Log.i(EditTextFoo, "UID $i")
 
             }
@@ -122,6 +124,7 @@ class MyWindowCallback() : Window.Callback {
                     Log.i(TextViewFoo, " rootViewGroup1 viewcheck ${view?.visibility}")
                 }
                 MotionEvent.ACTION_UP -> {
+                    Log.i("ActionUp  ", "TextVIew")
                     val rootGlobalRect = Rect()
                     view.getGlobalVisibleRect(rootGlobalRect);
                     val location = IntArray(2)
@@ -210,7 +213,7 @@ class MyWindowCallback() : Window.Callback {
                     var secondCordinates = arrayOf(view.right, view.bottom)
 
                     bounds =
-                        "${Arrays.toString(firstCordinates)} ${Arrays.toString(secondCordinates)}"
+                        "${Arrays.toString(firstCordinates)}${Arrays.toString(secondCordinates)}"
 
                     focused = view.isFocused
                     visible = view.visibility == 0
@@ -338,7 +341,7 @@ class MyWindowCallback() : Window.Callback {
                     var secondCordinates = arrayOf(view.right, view.bottom)
 
                     bounds =
-                        "${Arrays.toString(firstCordinates)} ${Arrays.toString(secondCordinates)}"
+                        "${Arrays.toString(firstCordinates)}${Arrays.toString(secondCordinates)}"
 
                     focused = view.isFocused
                     visible = view.visibility == 0
@@ -450,6 +453,7 @@ class MyWindowCallback() : Window.Callback {
                     Log.i(FOO, " rootViewGroup1 viewcheck ${view?.visibility}")
                 }
                 MotionEvent.ACTION_UP -> {
+                    Log.i("ActionUp  ", "Button")
                     val rootGlobalRect = Rect()
                     view.getGlobalVisibleRect(rootGlobalRect);
                     val location = IntArray(2)
@@ -538,7 +542,7 @@ class MyWindowCallback() : Window.Callback {
                     var secondCordinates = arrayOf(view.right, view.bottom)
 
                     bounds =
-                        "${Arrays.toString(firstCordinates)} ${Arrays.toString(secondCordinates)}"
+                        "${Arrays.toString(firstCordinates)}${Arrays.toString(secondCordinates)}"
 
                     focused = view.isFocused
                     visible = view.visibility == 0
@@ -575,6 +579,7 @@ class MyWindowCallback() : Window.Callback {
                     Log.i(FOO, " rootViewGroup1 viewcheck ${view?.visibility}")
                 }
                 MotionEvent.ACTION_UP -> {
+                    Log.i("ActionUp  ", "EditText")
                     val rootGlobalRect = Rect()
                     view.getGlobalVisibleRect(rootGlobalRect);
                     val location = IntArray(2)
@@ -663,7 +668,7 @@ class MyWindowCallback() : Window.Callback {
                     var secondCordinates = arrayOf(view.right, view.bottom)
 
                     bounds =
-                        "${Arrays.toString(firstCordinates)} ${Arrays.toString(secondCordinates)}"
+                        "${Arrays.toString(firstCordinates)}${Arrays.toString(secondCordinates)}"
 
                     focused = view.isFocused
                     visible = view.visibility == 0
@@ -820,6 +825,7 @@ class MyWindowCallback() : Window.Callback {
                     )
 
                     app = App(activity)
+                    print("this is Needed + $mType + $mclazz")
                     var selectedComponent = SelectedComponent(
                         `package` = app?.packageName,
                         bounds = bounds.toString(),

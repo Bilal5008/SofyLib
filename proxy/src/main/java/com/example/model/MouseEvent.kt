@@ -4,11 +4,11 @@ import com.google.gson.GsonBuilder
 import org.json.simple.JSONObject
 
 class MouseEvent {
-    var time: Long? = null
-    var pointX: Int? = null
+    var time: Long? = 0
+    var pointX: Int? = 0
 
-    var pointY: Int? = null
-    var mouseEventType: String? = null
+    var pointY: Int? = 0
+    var mouseEventType: String? = "0"
     constructor(time: Long?, pointX: Int?, pointY: Int?, mouseEventType: String?) {
         this.time = time
         this.pointX = pointX

@@ -13,9 +13,9 @@ class Scenario {
     var activityName: String? = null
     var xml: String? = null
     var selectedComponent: SelectedComponent? = null
-    var mouseEvents: ArrayList<MouseEvent>?= null
-    var inVChecksumGroup: ArrayList<String>? = null
-    var outVChecksumGroup: ArrayList<String>? = null
+    var mouseEvents: ArrayList<MouseEvent>?= arrayListOf()
+    var inVChecksumGroup: ArrayList<String>? = arrayListOf()
+    var outVChecksumGroup: ArrayList<String>? = arrayListOf()
     var snapshotLocation: String? = null
     var snapshotLocation_before: String? = null
     var snapshotLocation_after: String? = null

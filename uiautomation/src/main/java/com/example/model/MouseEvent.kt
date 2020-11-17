@@ -5,9 +5,9 @@ import org.json.simple.JSONObject
 
 class MouseEvent {
     var time: Long? = null
-    var pointX: Int? = null
+    var pointX: Int? = 0
 
-    var pointY: Int? = null
+    var pointY: Int? = 0
     var mouseEventType: String? = null
     constructor(time: Long?, pointX: Int?, pointY: Int?, mouseEventType: String?) {
         this.time = time
