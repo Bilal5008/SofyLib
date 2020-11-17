@@ -37,7 +37,7 @@ class  Utilities {
 
         fun factorForResolutionLenght(yPos : Int ) : Int
         {
-            return (yPos * 480 ) / width!!
+            return (yPos * 480 ) / height!!
         }
 
         fun getRamForDevice(context: Activity?): Long {

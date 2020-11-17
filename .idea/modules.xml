@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/My_ProxyWithActivity.iml" filepath="$PROJECT_DIR$/.idea/modules/My_ProxyWithActivity.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/My_ProxyWithActivity.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/My_ProxyWithActivity.app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/proxy/My_ProxyWithActivity.proxy.iml" filepath="$PROJECT_DIR$/.idea/modules/proxy/My_ProxyWithActivity.proxy.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/uiautomata/My_ProxyWithActivity.uiautomata.iml" filepath="$PROJECT_DIR$/.idea/modules/uiautomata/My_ProxyWithActivity.uiautomata.iml" />
     </modules>
   </component>
 </project>

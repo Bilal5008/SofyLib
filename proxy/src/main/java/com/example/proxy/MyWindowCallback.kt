@@ -561,7 +561,7 @@ class MyWindowCallback() : Window.Callback {
 
                 }
             }
-            true
+            false
         }
     }
 
