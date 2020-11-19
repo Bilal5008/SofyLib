@@ -213,7 +213,7 @@ class MyWindowCallback() : Window.Callback {
                     var secondCordinates = arrayOf(view.right, view.bottom)
 
                     bounds =
-                        "${Arrays.toString(firstCordinates)}${Arrays.toString(secondCordinates)}"
+                        "${Arrays.toString(firstCordinates).replace(" ","")}${Arrays.toString(secondCordinates).replace(" ","")}"
 
                     focused = view.isFocused
                     visible = view.visibility == 0
@@ -230,7 +230,7 @@ class MyWindowCallback() : Window.Callback {
                     xPath = "//hierarchy[1]/"
                     mclazz = "TextView"
                     mType = "XCUIElementTypeTextView"
-                    ContentDesc = viewText
+                    ContentDesc = ""
                     ActionValue = ""
 
                 }
@@ -341,7 +341,7 @@ class MyWindowCallback() : Window.Callback {
                     var secondCordinates = arrayOf(view.right, view.bottom)
 
                     bounds =
-                        "${Arrays.toString(firstCordinates)}${Arrays.toString(secondCordinates)}"
+                        "${Arrays.toString(firstCordinates).replace(" ","")}${Arrays.toString(secondCordinates).replace(" ","")}"
 
                     focused = view.isFocused
                     visible = view.visibility == 0
@@ -542,7 +542,7 @@ class MyWindowCallback() : Window.Callback {
                     var secondCordinates = arrayOf(view.right, view.bottom)
 
                     bounds =
-                        "${Arrays.toString(firstCordinates)}${Arrays.toString(secondCordinates)}"
+                        "${Arrays.toString(firstCordinates).replace(" ","")}${Arrays.toString(secondCordinates).replace(" ","")}"
 
                     focused = view.isFocused
                     visible = view.visibility == 0
@@ -559,7 +559,7 @@ class MyWindowCallback() : Window.Callback {
                     xPath = "//hierarchy[1]/"
                     mclazz = "Button"
                     mType = "XCUIElementTypeButton"
-                    ContentDesc = viewText
+                    ContentDesc = ""
                     ActionValue = ""
 
 
@@ -668,7 +668,7 @@ class MyWindowCallback() : Window.Callback {
                     var secondCordinates = arrayOf(view.right, view.bottom)
 
                     bounds =
-                        "${Arrays.toString(firstCordinates)}${Arrays.toString(secondCordinates)}"
+                        "${Arrays.toString(firstCordinates).replace(" ","")}${Arrays.toString(secondCordinates).replace(" ","")}"
 
                     focused = view.isFocused
                     visible = view.visibility == 0
