@@ -17,7 +17,6 @@ class MouseEvent {
     }
 
 
-    constructor(nothing: Nothing?)
 
 
     fun toJSON(): JSONObject? {

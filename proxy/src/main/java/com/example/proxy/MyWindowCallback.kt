@@ -8,7 +8,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
 import android.os.Build
-import android.text.InputType
 import android.util.Base64
 import android.util.Log
 import android.view.*
@@ -213,7 +212,11 @@ class MyWindowCallback() : Window.Callback {
                     var secondCordinates = arrayOf(view.right, view.bottom)
 
                     bounds =
-                        "${Arrays.toString(firstCordinates).replace(" ","")}${Arrays.toString(secondCordinates).replace(" ","")}"
+                        "${Arrays.toString(firstCordinates).replace(" ", "")}${
+                            Arrays.toString(
+                                secondCordinates
+                            ).replace(" ", "")
+                        }"
 
                     focused = view.isFocused
                     visible = view.visibility == 0
@@ -341,7 +344,11 @@ class MyWindowCallback() : Window.Callback {
                     var secondCordinates = arrayOf(view.right, view.bottom)
 
                     bounds =
-                        "${Arrays.toString(firstCordinates).replace(" ","")}${Arrays.toString(secondCordinates).replace(" ","")}"
+                        "${Arrays.toString(firstCordinates).replace(" ", "")}${
+                            Arrays.toString(
+                                secondCordinates
+                            ).replace(" ", "")
+                        }"
 
                     focused = view.isFocused
                     visible = view.visibility == 0
@@ -371,9 +378,7 @@ class MyWindowCallback() : Window.Callback {
                     // click on edittext -- >EditText
 
 
-                    mouseEventList?.add(
-                        MouseEvent(null)
-                    )
+                    mouseEventList = ArrayList()
                     app = App(activity)
                     var selectedComponent = SelectedComponent(
                         `package` = app?.packageName,
@@ -541,8 +546,11 @@ class MyWindowCallback() : Window.Callback {
 
                     var secondCordinates = arrayOf(view.right, view.bottom)
 
-                    bounds =
-                        "${Arrays.toString(firstCordinates).replace(" ","")}${Arrays.toString(secondCordinates).replace(" ","")}"
+                    bounds = "${Arrays.toString(firstCordinates).replace(" ", "")}${
+                        Arrays.toString(
+                            secondCordinates
+                        ).replace(" ", "")
+                    }"
 
                     focused = view.isFocused
                     visible = view.visibility == 0
@@ -559,7 +567,7 @@ class MyWindowCallback() : Window.Callback {
                     xPath = "//hierarchy[1]/"
                     mclazz = "Button"
                     mType = "XCUIElementTypeButton"
-                    ContentDesc = ""
+                    ContentDesc = "Button"
                     ActionValue = ""
 
 
@@ -668,7 +676,11 @@ class MyWindowCallback() : Window.Callback {
                     var secondCordinates = arrayOf(view.right, view.bottom)
 
                     bounds =
-                        "${Arrays.toString(firstCordinates).replace(" ","")}${Arrays.toString(secondCordinates).replace(" ","")}"
+                        "${Arrays.toString(firstCordinates).replace(" ", "")}${
+                            Arrays.toString(
+                                secondCordinates
+                            ).replace(" ", "")
+                        }"
 
                     focused = view.isFocused
                     visible = view.visibility == 0
