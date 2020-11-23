@@ -88,14 +88,10 @@ class MyWindowCallback() : Window.Callback {
 
 
             for (i in 0 until viewGroupSize!!) {
-//                finalView =
-//                    ((this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
-//                        0
-
-//                    ) as? ViewGroup)?.get(i)
-
                 finalView =
-                    ((((this.activity?.findViewById(R.id.content) as? ViewGroup)?.getChildAt(0) as ViewGroup).get(0) as ViewGroup).get(0) as ViewGroup).getChildAt(4)
+                    ((this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
+                        0
+                    ) as? ViewGroup)?.get(i)
 
 
 
