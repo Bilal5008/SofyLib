@@ -93,6 +93,8 @@ class MyWindowCallback() : Window.Callback {
                         0
                     ) as? ViewGroup)?.get(i)
 
+                val viewGroup =
+                    (this.activity?.findViewById(R.id.content) as? ViewGroup)?.getChildAt(0)
 
                 if (finalView is Button) {
                     addOnTouchListener(finalView as Button, i, activity)
