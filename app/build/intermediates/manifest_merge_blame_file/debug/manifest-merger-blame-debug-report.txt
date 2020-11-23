@@ -43,27 +43,28 @@
 24-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:10:9-54
 25        android:supportsRtl="true"
 25-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:11:9-35
-26        android:theme="@style/AppTheme"
-26-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:12:9-40
-27        android:usesCleartextTraffic="true" >
-27-->[:proxy] D:\JsonReader-main\proxy\build\intermediates\library_manifest\debug\AndroidManifest.xml:16:18-53
-28        <activity android:name="com.example.myproxywithactivity.MainActivity2" />
-28-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:13:9-60
-28-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:13:19-48
-29        <activity android:name="com.example.myproxywithactivity.MainActivity" >
-29-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:14:9-20:20
-29-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:14:19-47
-30            <intent-filter>
-30-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:15:13-19:29
-31                <action android:name="android.intent.action.MAIN" />
-31-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:16:17-69
-31-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:16:25-66
-32
-33                <category android:name="android.intent.category.LAUNCHER" />
-33-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:18:17-77
-33-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:18:27-74
-34            </intent-filter>
-35        </activity>
-36    </application>
-37
-38</manifest>
+26        android:testOnly="true"
+27        android:theme="@style/AppTheme"
+27-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:12:9-40
+28        android:usesCleartextTraffic="true" >
+28-->[:proxy] D:\JsonReader-main\proxy\build\intermediates\library_manifest\debug\AndroidManifest.xml:16:18-53
+29        <activity android:name="com.example.myproxywithactivity.MainActivity2" />
+29-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:13:9-60
+29-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:13:19-48
+30        <activity android:name="com.example.myproxywithactivity.MainActivity" >
+30-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:14:9-20:20
+30-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:14:19-47
+31            <intent-filter>
+31-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:15:13-19:29
+32                <action android:name="android.intent.action.MAIN" />
+32-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:16:17-69
+32-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:16:25-66
+33
+34                <category android:name="android.intent.category.LAUNCHER" />
+34-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:18:17-77
+34-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:18:27-74
+35            </intent-filter>
+36        </activity>
+37    </application>
+38
+39</manifest>
