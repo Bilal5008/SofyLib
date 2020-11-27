@@ -71,7 +71,7 @@ open class ApplicationStart : Application(), Application.ActivityLifecycleCallba
 
 
 
-        AndroidNetworking.post("http://api-sofy-test.azurewebsites.net/api/Applications/35b034ec-e0b4-4886-9c51-37a5371f43bc/CreateLiveTestCaseAndTestRun")
+        AndroidNetworking.post("http://api-sofy-test.azurewebsites.net/api/Applications/1d167171-31ef-4d1f-8c33-0ed6394ac1ac/CreateLiveTestCaseAndTestRun")
             .addJSONObjectBody(jsonObject) // posting json
             .setTag("test")
             .addHeaders("Content-Type", "application/json")
