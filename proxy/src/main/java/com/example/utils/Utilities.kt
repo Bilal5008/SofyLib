@@ -7,15 +7,16 @@ import android.util.DisplayMetrics
 import android.view.WindowManager
 
 
-class  Utilities {
+class Utilities {
 
     companion object {
         var actionIndex: Int = 0
         var bounds: String? = null
         var gUID: String? = null
         var packageName: String? = null
-        var width : Int ? = 0
-        var height : Int ? = 0
+        var width: Int? = 0
+        var height: Int? = 0
+        var isFirstTime: Boolean? = false
 
         var file64Byte: String? = null
 
@@ -24,20 +25,19 @@ class  Utilities {
             val display = wm.defaultDisplay
             val metrics = DisplayMetrics()
             display.getMetrics(metrics)
-             width = metrics.widthPixels
-             height = metrics.heightPixels
+            width = metrics.widthPixels
+            height = metrics.heightPixels
             return "${width}x${height}"
 //            "${width/2}x${height/2}"
         }
-        fun factorForResolutionWidth(xPos : Int) :Int
-        {
-            return (xPos * 270 ) / width!!
+
+        fun factorForResolutionWidth(xPos: Int): Int {
+            return (xPos * 270) / width!!
 
         }
 
-        fun factorForResolutionLenght(yPos : Int ) : Int
-        {
-            return (yPos * 480 ) / height!!
+        fun factorForResolutionLenght(yPos: Int): Int {
+            return (yPos * 480) / height!!
         }
 
         fun getRamForDevice(context: Activity?): Long {

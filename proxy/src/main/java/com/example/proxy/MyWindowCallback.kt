@@ -62,10 +62,13 @@ class MyWindowCallback() : Window.Callback {
     var app: App? = null
     var d: Device? = null
     var xPath: String? = ""
-    var mclazz: String? = ""
+    var mclazz: String? = "View"
     var mType: String? = ""
     var ContentDesc: String? = ""
-    var ActionValue: String? = ""
+    var ActionValue: String? = "--"
+    var Password: Boolean? = false
+    var xPos = -1
+    var yPos = -1
 
     companion object {
         const val FOO = "MyWindowCallback"
@@ -76,36 +79,34 @@ class MyWindowCallback() : Window.Callback {
     constructor(localCallback: Window.Callback, activity: Activity) : this() {
         this.activity = activity
         this.localCallback = localCallback
-
+        Log.i(FOO, "Registringcallbacks*******")
 //        var driver: WebDriver = AndroidDriver(URL("http://127.0.0.1:4723/wd/hub"), capabilities)
         mouseEventList = arrayListOf()
-        var viewGroupSize =
-            ((this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
-                0
-            ) as? ViewGroup)?.childCount
+        var viewGroupSize = ((((this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
+            0
+        ) as? ViewGroup)?.get(0) as ViewGroup).get(0) as ViewGroup).childCount
 
         if (this.activity != null && this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup != null) {
 
 
             for (i in 0 until viewGroupSize!!) {
-                finalView =
-                    ((this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
-                        0
-                    ) as? ViewGroup)?.get(i)
+                finalView = ((((this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
+                    0
+                ) as? ViewGroup)?.get(0) as ViewGroup).get(0) as ViewGroup).get(i)
 
-
-
+                if (finalView is TextView) {
+                    addTextViewListener(finalView as TextView, i, activity)
+                }
                 if (finalView is Button) {
                     addOnTouchListener(finalView as Button, i, activity)
-                } else if (finalView is EditText) {
+                }
+                if (finalView is EditText) {
                     addOnTouchListenerForEditText(finalView as EditText, i, activity)
                 }
-                 if (finalView is EditText) {
+                if (finalView is EditText) {
                     addSetTextListener(finalView as EditText, i, activity)
                 }
-//                 else if (finalView is TextView) {
-//                    addTextViewListener(finalView as TextView, i, activity)
-//                }
+
                 Log.i(EditTextFoo, "UID $i")
 
             }
@@ -235,11 +236,14 @@ class MyWindowCallback() : Window.Callback {
                     mclazz = "TextView"
                     mType = "XCUIElementTypeTextView"
                     ContentDesc = ""
-                    ActionValue = ""
+                    ActionValue = "--"
+//                    if (!finalView.inputType.toString() .equals( "129")) {
+                        Password = false
+//                    }
 
                 }
             }
-            true
+            false
         }
 
     }
@@ -368,6 +372,7 @@ class MyWindowCallback() : Window.Callback {
                     mType = "XCUIElementTypeTextField"
                     ContentDesc = "dummy"
                     ActionValue = viewText
+                    Password = false
 
 //                    if (view.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
 //                        mclazz = "SecureTextField"
@@ -381,6 +386,8 @@ class MyWindowCallback() : Window.Callback {
 
                     mouseEventList = ArrayList()
                     app = App(activity)
+
+
                     var selectedComponent = SelectedComponent(
                         `package` = app?.packageName,
                         bounds = bounds.toString(),
@@ -398,9 +405,10 @@ class MyWindowCallback() : Window.Callback {
                         clazz = mclazz,
                         Type = ContentDesc,
                         ContentDesc = ContentDesc,
+                        Password = Password
 
 
-                        )
+                    )
 
                     var device = DeviceConfigured(
 
@@ -453,6 +461,7 @@ class MyWindowCallback() : Window.Callback {
     private fun addOnTouchListener(finalView: Button, i: Int, activity: Activity) {
         finalView?.setOnTouchListener { view, motionEvent ->
             Log.i(FOO, "FirstAddedTOuchListener $view")
+            Log.i(FOO, "addOnTouchListener $view")
 
             when (motionEvent?.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -569,7 +578,10 @@ class MyWindowCallback() : Window.Callback {
                     mclazz = "Button"
                     mType = "XCUIElementTypeButton"
                     ContentDesc = "Button"
-                    ActionValue = ""
+                    ActionValue = "--"
+                    Password = false
+
+
 
 
                 }
@@ -699,7 +711,10 @@ class MyWindowCallback() : Window.Callback {
                     mclazz = "EditText"
                     mType = "XCUIElementTypeEditText"
                     ContentDesc = viewText
-                    ActionValue = ""
+                    ActionValue = "--"
+                    if (finalView.inputType.toString() .equals( "129")) {
+                        Password = true
+                    }
 
 
                 }
@@ -726,14 +741,13 @@ class MyWindowCallback() : Window.Callback {
             MotionEvent.ACTION_MOVE -> actionCode = "DRAG"
             MotionEvent.ACTION_UP -> actionCode = "RELEASE"
         }
-//        Log.d(FOO, "The action is : $actionCode")
+        Log.d(FOO, "The action is : $actionCode")
 //        Log.d(FOO, "The action is time stemp is  : ${System.currentTimeMillis()}")
 //        Log.d(FOO, "The action is time dateformat is  : ${getDateTime(System.currentTimeMillis())}")
 
 
         val index = event.actionIndex
-        var xPos = -1
-        var yPos = -1
+
 
 //        if (actionCode === "Down") {
 //
@@ -827,12 +841,12 @@ class MyWindowCallback() : Window.Callback {
                 }
                 actionCode === "RELEASE" -> {
 
-
+                    d = Device(activity)
                     mouseEventList?.add(
                         MouseEvent(
                             System.currentTimeMillis(),
-                            factorForResolutionWidth(xPos),
-                            factorForResolutionLenght(yPos),
+                            -1,
+                            -1,
                             actionCode
                         )
                     )
@@ -856,6 +870,8 @@ class MyWindowCallback() : Window.Callback {
                         clazz = mclazz,
                         Type = mType,
                         ContentDesc = ContentDesc,
+                        Password = Password
+
                     )
 
                     var device = DeviceConfigured(
@@ -885,8 +901,12 @@ class MyWindowCallback() : Window.Callback {
                         "appIconFile",
                         "appFile"
                     )
-
                     var action = "CLICK"
+                    if(mclazz.equals("View"))
+                    {
+                         action = "SWIPE"
+                    }
+
                     get64EncodedString(
                         writeJSONObjectListener,
                         selectedComponent,
@@ -972,26 +992,6 @@ class MyWindowCallback() : Window.Callback {
             "appIconFile",
             "appFile"
         )
-//        var selectedComponent = SelectedComponent()
-//        var scenario = Scenario(
-//            "APP_LAUNCH",
-//            "--",
-//            a.activityName,
-//            "XML_PLACE",
-//            selectedComponent,
-//            mouseEvent,
-//            null,
-//            null,
-//            "",
-//            "",
-//            "",
-//            AndroidPerformanceMonitors(),
-//            "",
-//            0,
-//            null,
-//            12345
-//        )
-
 
         var scenarioList: ArrayList<Scenario> = arrayListOf()
         if (obj != null) {
@@ -1167,10 +1167,11 @@ class MyWindowCallback() : Window.Callback {
             enabled = enabled,
             longClickable = longClickable,
             scrollable = scrollable,
-            visible = visible,
+            visible = visible
         )
 
         var action = "APP_LAUNCH"
+        println("action not again")
         get64EncodedString(writeJSONObjectListener, selectedComponent, action, device, appInfo)
 
 

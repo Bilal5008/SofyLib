@@ -8,12 +8,6 @@
         android:minSdkVersion="18"
         android:targetSdkVersion="30" />
 
-    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <application
         android:name="com.example.myproxywithactivity.ApplicationClass"
         android:allowBackup="true"
@@ -24,8 +18,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:testOnly="true"
-        android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true" >
+        android:theme="@style/AppTheme" >
         <activity android:name="com.example.myproxywithactivity.MainActivity2" />
         <activity android:name="com.example.myproxywithactivity.MainActivity" >
             <intent-filter>

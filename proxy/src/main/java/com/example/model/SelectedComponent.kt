@@ -26,6 +26,7 @@ class SelectedComponent {
             clazz: String ?,
             Type : String ?,
             ContentDesc : String?,
+    Password : Boolean?
 
 
 
@@ -50,6 +51,7 @@ class SelectedComponent {
         this.clazz = clazz!!
         this.type = Type!!
         this.contentDesc = ContentDesc!!
+        this.password = Password!!
 
 
 
@@ -99,7 +101,7 @@ class SelectedComponent {
         focusable: Boolean?,
         clickable: Boolean?,
         longClickable: Boolean?,
-        scrollable: Boolean?,
+        scrollable: Boolean?
 
 
     ) {

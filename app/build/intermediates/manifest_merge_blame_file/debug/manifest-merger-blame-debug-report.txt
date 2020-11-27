@@ -10,61 +10,43 @@
 9        android:targetSdkVersion="30" />
 9-->D:\JsonReader-main\app\src\main\AndroidManifest.xml
 10
-11    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
-11-->[:proxy] D:\JsonReader-main\proxy\build\intermediates\library_manifest\debug\AndroidManifest.xml:11:5-75
-11-->[:proxy] D:\JsonReader-main\proxy\build\intermediates\library_manifest\debug\AndroidManifest.xml:11:22-72
-12    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-12-->[:proxy] D:\JsonReader-main\proxy\build\intermediates\library_manifest\debug\AndroidManifest.xml:12:5-81
-12-->[:proxy] D:\JsonReader-main\proxy\build\intermediates\library_manifest\debug\AndroidManifest.xml:12:22-78
-13    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-13-->[:proxy] D:\JsonReader-main\proxy\build\intermediates\library_manifest\debug\AndroidManifest.xml:13:5-80
-13-->[:proxy] D:\JsonReader-main\proxy\build\intermediates\library_manifest\debug\AndroidManifest.xml:13:22-77
-14    <uses-permission android:name="android.permission.INTERNET" />
-14-->[:proxy] D:\JsonReader-main\proxy\build\intermediates\library_manifest\debug\AndroidManifest.xml:14:5-67
-14-->[:proxy] D:\JsonReader-main\proxy\build\intermediates\library_manifest\debug\AndroidManifest.xml:14:22-64
-15    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-15-->[com.an.deviceinfo:deviceinfo:0.1.5] C:\Users\Muhammad Bilal\.gradle\caches\transforms-2\files-2.1\9c6cde82898f6a5ea212359f3cf6bab9\jetified-deviceinfo-0.1.5\AndroidManifest.xml:11:5-79
-15-->[com.an.deviceinfo:deviceinfo:0.1.5] C:\Users\Muhammad Bilal\.gradle\caches\transforms-2\files-2.1\9c6cde82898f6a5ea212359f3cf6bab9\jetified-deviceinfo-0.1.5\AndroidManifest.xml:11:22-76
-16
-17    <application
-17-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:5:5-21:19
-18        android:name="com.example.myproxywithactivity.ApplicationClass"
-18-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:6:9-41
-19        android:allowBackup="true"
-19-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:7:9-35
-20        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-20-->[androidx.core:core:1.5.0-alpha05] C:\Users\Muhammad Bilal\.gradle\caches\transforms-2\files-2.1\9936d66db12a42958b126e9e939209ba\core-1.5.0-alpha05\AndroidManifest.xml:24:18-86
-21        android:debuggable="true"
-22        android:icon="@mipmap/ic_launcher"
-22-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:8:9-43
-23        android:label="@string/app_name"
-23-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:9:9-41
-24        android:roundIcon="@mipmap/ic_launcher_round"
-24-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:10:9-54
-25        android:supportsRtl="true"
-25-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:11:9-35
-26        android:testOnly="true"
-27        android:theme="@style/AppTheme"
-27-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:12:9-40
-28        android:usesCleartextTraffic="true" >
-28-->[:proxy] D:\JsonReader-main\proxy\build\intermediates\library_manifest\debug\AndroidManifest.xml:16:18-53
-29        <activity android:name="com.example.myproxywithactivity.MainActivity2" />
-29-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:13:9-60
-29-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:13:19-48
-30        <activity android:name="com.example.myproxywithactivity.MainActivity" >
-30-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:14:9-20:20
-30-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:14:19-47
-31            <intent-filter>
-31-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:15:13-19:29
-32                <action android:name="android.intent.action.MAIN" />
-32-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:16:17-69
-32-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:16:25-66
-33
-34                <category android:name="android.intent.category.LAUNCHER" />
-34-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:18:17-77
-34-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:18:27-74
-35            </intent-filter>
-36        </activity>
-37    </application>
-38
-39</manifest>
+11    <application
+11-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:5:5-21:19
+12        android:name="com.example.myproxywithactivity.ApplicationClass"
+12-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:6:9-41
+13        android:allowBackup="true"
+13-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:7:9-35
+14        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+14-->[androidx.core:core:1.3.1] C:\Users\Muhammad Bilal\.gradle\caches\transforms-2\files-2.1\21d47dff16ccbe3d5a08083de58452c6\core-1.3.1\AndroidManifest.xml:24:18-86
+15        android:debuggable="true"
+16        android:icon="@mipmap/ic_launcher"
+16-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:8:9-43
+17        android:label="@string/app_name"
+17-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:9:9-41
+18        android:roundIcon="@mipmap/ic_launcher_round"
+18-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:10:9-54
+19        android:supportsRtl="true"
+19-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:11:9-35
+20        android:testOnly="true"
+21        android:theme="@style/AppTheme" >
+21-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:12:9-40
+22        <activity android:name="com.example.myproxywithactivity.MainActivity2" />
+22-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:13:9-60
+22-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:13:19-48
+23        <activity android:name="com.example.myproxywithactivity.MainActivity" >
+23-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:14:9-20:20
+23-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:14:19-47
+24            <intent-filter>
+24-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:15:13-19:29
+25                <action android:name="android.intent.action.MAIN" />
+25-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:16:17-69
+25-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:16:25-66
+26
+27                <category android:name="android.intent.category.LAUNCHER" />
+27-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:18:17-77
+27-->D:\JsonReader-main\app\src\main\AndroidManifest.xml:18:27-74
+28            </intent-filter>
+29        </activity>
+30    </application>
+31
+32</manifest>
