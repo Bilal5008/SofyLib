@@ -15,8 +15,13 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.TextView.OnEditorActionListener
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatImageButton
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.get
 import com.an.deviceinfo.device.model.App
 import com.an.deviceinfo.device.model.Device
@@ -53,6 +58,7 @@ class MyWindowCallback() : Window.Callback {
     var uId: Int? = 0
     var focused: Boolean? = false
     var visible: Boolean? = false
+    var resourceId: String? = ""
     var enabled: Boolean? = false
     var focusable: Boolean? = false
     var longClickable: Boolean? = false
@@ -69,6 +75,13 @@ class MyWindowCallback() : Window.Callback {
     var Password: Boolean? = false
     var xPos = -1
     var yPos = -1
+    var view: View? = null
+
+    var textViewList: ArrayList<AppCompatTextView>? = arrayListOf()
+    var editTextList: ArrayList<AppCompatEditText>? = arrayListOf()
+    var buttonList: ArrayList<AppCompatButton>? = arrayListOf()
+    var imageButtonList: ArrayList<AppCompatImageButton>? = arrayListOf()
+    var addingListenerBoolean: Boolean = true
 
     companion object {
         const val FOO = "MyWindowCallback"
@@ -82,41 +95,46 @@ class MyWindowCallback() : Window.Callback {
         Log.i(FOO, "Registringcallbacks*******")
 //        var driver: WebDriver = AndroidDriver(URL("http://127.0.0.1:4723/wd/hub"), capabilities)
         mouseEventList = arrayListOf()
-        var viewGroupSize = ((((this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
-            0
-        ) as? ViewGroup)?.get(0) as ViewGroup).get(0) as ViewGroup).childCount
+//        var viewGroupSize = ((((this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
+//            0
+//        ) as? ViewGroup)?.get(0) as ViewGroup).get(0) as ViewGroup).childCount
+
+        view =
+            (this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
+                0
+            )
 
         if (this.activity != null && this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup != null) {
+            debugViewIds(view!!, "NEW_LOGS")
 
-
-            for (i in 0 until viewGroupSize!!) {
-                finalView = ((((this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
-                    0
-                ) as? ViewGroup)?.get(0) as ViewGroup).get(0) as ViewGroup).get(i)
-
-                if (finalView is TextView) {
-                    addTextViewListener(finalView as TextView, i, activity)
-                }
-                if (finalView is Button) {
-                    addOnTouchListener(finalView as Button, i, activity)
-                }
-                if (finalView is EditText) {
-                    addOnTouchListenerForEditText(finalView as EditText, i, activity)
-                }
-                if (finalView is EditText) {
-                    addSetTextListener(finalView as EditText, i, activity)
-                }
-
-                Log.i(EditTextFoo, "UID $i")
-
-            }
+//            for (i in 0 until viewGroupSize!!) {
+//                finalView = ((((this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
+//                    0
+//                ) as? ViewGroup)?.get(0) as ViewGroup).get(0) as ViewGroup).get(i)
+//
+//                if (finalView is TextView) {
+//                    addTextViewListener(finalView as TextView, i)
+//                }
+//                if (finalView is Button) {
+//                    addOnTouchListener(finalView as Button, i, activity)
+//                }
+//                if (finalView is EditText) {
+//                    addOnTouchListenerForEditText(finalView as EditText, i, activity)
+//                }
+//                if (finalView is EditText) {
+//                    addSetTextListener(finalView as EditText, i, activity)
+//                }
+//
+//                Log.i(EditTextFoo, "UID $i")
+//
+//            }
 
 
         }
     }
 
 
-    private fun addTextViewListener(finalView: TextView, i: Int, activity: Activity) {
+    private fun addTextViewListener(finalView: TextView, i: Int) {
         finalView?.setOnTouchListener { view, motionEvent ->
             Log.i(TextViewFoo, "FirstAddedTOuchListener $view")
 
@@ -238,7 +256,7 @@ class MyWindowCallback() : Window.Callback {
                     ContentDesc = ""
                     ActionValue = "--"
 //                    if (!finalView.inputType.toString() .equals( "129")) {
-                        Password = false
+                    Password = false
 //                    }
 
                 }
@@ -248,7 +266,7 @@ class MyWindowCallback() : Window.Callback {
 
     }
 
-    private fun addSetTextListener(finalView: EditText, i: Int, activity: Activity) {
+    private fun addSetTextListener(finalView: EditText, i: Int) {
 
 
         finalView.imeOptions = EditorInfo.IME_ACTION_DONE
@@ -458,7 +476,7 @@ class MyWindowCallback() : Window.Callback {
 
     }
 
-    private fun addOnTouchListener(finalView: Button, i: Int, activity: Activity) {
+    private fun addOnTouchListener(finalView: Button, i: Int) {
         finalView?.setOnTouchListener { view, motionEvent ->
             Log.i(FOO, "FirstAddedTOuchListener $view")
             Log.i(FOO, "addOnTouchListener $view")
@@ -582,8 +600,6 @@ class MyWindowCallback() : Window.Callback {
                     Password = false
 
 
-
-
                 }
             }
             false
@@ -591,7 +607,7 @@ class MyWindowCallback() : Window.Callback {
     }
 
 
-    private fun addOnTouchListenerForEditText(finalView: EditText, i: Int, activity: Activity) {
+    private fun addOnTouchListenerForEditText(finalView: EditText, i: Int) {
         finalView?.setOnTouchListener { view, motionEvent ->
             Log.i(FOO, "FirstAddedTOuchListener $view")
 
@@ -712,7 +728,7 @@ class MyWindowCallback() : Window.Callback {
                     mType = "XCUIElementTypeEditText"
                     ContentDesc = viewText
                     ActionValue = "--"
-                    if (finalView.inputType.toString() .equals( "129")) {
+                    if (finalView.inputType.toString().equals("129")) {
                         Password = true
                     }
 
@@ -864,7 +880,7 @@ class MyWindowCallback() : Window.Callback {
                         longClickable = longClickable,
                         scrollable = scrollable,
                         visible = visible,
-                        resourceId = "",
+                        resourceId = resourceId,
                         xpath = xPath,
                         text = viewText,
                         clazz = mclazz,
@@ -902,9 +918,8 @@ class MyWindowCallback() : Window.Callback {
                         "appFile"
                     )
                     var action = "CLICK"
-                    if(mclazz.equals("View"))
-                    {
-                         action = "SWIPE"
+                    if (mclazz.equals("View")) {
+                        action = "SWIPE"
                     }
 
                     get64EncodedString(
@@ -1234,6 +1249,28 @@ class MyWindowCallback() : Window.Callback {
         }
     }
 
+    fun addingListeners(
+        textViewList: ArrayList<AppCompatTextView>?,
+        buttonList: ArrayList<AppCompatButton>?,
+        editTextList: ArrayList<AppCompatEditText>?,
+        imageButtonList: ArrayList<AppCompatImageButton>?
+    ) {
+
+        for (i in 0 until textViewList!!.size) {
+            addTextViewListener(textViewList[i], i)
+        }
+        for (i in 0 until buttonList!!.size) {
+            addOnTouchListener(buttonList[i], i)
+        }
+        for (i in 0 until editTextList!!.size) {
+            addOnTouchListenerForEditText(editTextList[i], i)
+            addSetTextListener(editTextList[i], i)
+        }
+//        for (i in 0 until imageButtonList!!.size) {
+//            addOnTouchListenerForEditText(imageButtonList[i], i)
+//        }
+    }
+
 
     val writeJSONObjectListener = object : writeJSONObjectListener {
         override fun onSuccess(
@@ -1320,6 +1357,266 @@ class MyWindowCallback() : Window.Callback {
 
         }
 
+    }
+
+
+    fun debugViewIds(view: View, logtag: String?): View {
+        Log.v(logtag, "traversing: " + view.javaClass.simpleName + ", id: " + view.id)
+        return if (view.parent != null && view.parent is ViewGroup) {
+            if(view is ScrollView) {
+                addingSwipOnLayout(view)
+            }
+            debugViewIds(view.parent as View, logtag)
+        } else {
+            debugChildViewIds(view, logtag, 0)
+            return view
+        }
+    }
+
+    private fun addingSwipOnLayout(view: View) {
+        view.setOnTouchListener(object :OnSwipeTouchListener(activity){
+            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+
+
+
+                return super.onTouch(v, event)
+            }
+
+            override fun onSwipeRight() {
+                super.onSwipeRight()
+            }
+
+            override fun onSwipeLeft() {
+                super.onSwipeLeft()
+            }
+
+            override fun onSwipeTop() {
+                super.onSwipeTop()
+            }
+
+            override fun onSwipeBottom() {
+                super.onSwipeBottom()
+            }
+        });
+
+
+    }
+
+    private fun debugChildViewIds(view: View, logtag: String?, spaces: Int) {
+        if (view is ViewGroup) {
+            val group = view
+            for (i in 0 until group.childCount) {
+                val child = group.getChildAt(i)
+                addListenering(child, i)
+                Log.v(
+                    logtag,
+                    padString("view: " + child.javaClass.simpleName + "(" + child.id + ")", spaces)
+                )
+                debugChildViewIds(child, logtag, spaces + 1)
+            }
+            Log.v(logtag, "this is calling")
+
+            if (addingListenerBoolean) {
+//                addingListenerBoolean = false
+                Log.v(logtag, "this should be call last")
+                Log.v(logtag, "textViewList-----SIZE" + textViewList?.size)
+                Log.v(logtag, "buttonList-----SIZE" + buttonList?.size)
+                Log.v(logtag, "editTextList-----SIZE" + editTextList?.size)
+                Log.v(logtag, "imageButtonList-----SIZE" + imageButtonList?.size)
+
+//                addingListeners(
+//                     textViewList,
+//                     buttonList,
+//                     editTextList,
+//                     imageButtonList
+//                )
+            }
+
+        }
+
+    }
+
+    private fun addListenering(finalView: View?, i: Int): Boolean {
+        if (finalView is AppCompatTextView) {
+
+            addTextViewListener(finalView, i)
+//             textViewList?.add(finalView as AppCompatTextView)
+            // addTextViewListener(finalView as TextView, i, activity)
+        }
+        if (finalView is AppCompatButton) {
+            addOnTouchListener(finalView, i)
+//             buttonList?.add(finalView as AppCompatButton)
+            //addOnTouchListener(finalView as Button, i, activity)
+        }
+        if (finalView is AppCompatEditText) {
+            addSetTextListener(finalView, i)
+            addOnTouchListenerForEditText(finalView, i)
+//             editTextList?.add(finalView as AppCompatEditText)
+
+            //addOnTouchListenerForEditText(finalView as EditText, i, activity)
+        }
+        if (finalView is AppCompatImageButton) {
+//            imageButtonList?.add(finalView as AppCompatImageButton)
+
+            addOnTouchListenerForImageView(finalView , i)
+        }
+
+//        MyWindowCallback().addingListeners(textViewList, buttonList, editTextList, imageButtonList)
+//        for (i in 0 until textViewList!!.size) {
+//            MyWindowCallback.addTextViewListener(textViewList!![i] as TextView, i, activity)
+//        }
+//        for (i in 0 until buttonList!!.size) {
+//            addOnTouchListener(buttonList!![i] as Button, i, activity)
+//
+//        }
+
+
+        return true
+    }
+
+    private fun addOnTouchListenerForImageView(finalView: AppCompatImageButton, i: Int) {
+        finalView?.setOnTouchListener { view, motionEvent ->
+            Log.i(TextViewFoo, "FirstAddedTOuchListener $view")
+
+            when (motionEvent?.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    Log.i(TextViewFoo, " rootViewGroup1 viewcheck ${view?.visibility}")
+                }
+                MotionEvent.ACTION_UP -> {
+                    Log.i("ActionUp  ", "ImageButtonView")
+                    val rootGlobalRect = Rect()
+                    view.getGlobalVisibleRect(rootGlobalRect);
+                    val location = IntArray(2)
+                    Log.i(TextViewFoo, " rootViewGroup1 viewcheck ${view?.visibility}")
+                    Log.i(
+                        TextViewFoo,
+                        " rootViewGroup1 viewcheck ${
+                            view?.getLocationOnScreen(location).toString()
+                        }"
+                    )
+                    Log.i(TextViewFoo, " rootViewGroup1 UID ${i}")
+
+                    uId = i
+                    val rectf = Rect()
+
+//For coordinates location relative to the parent
+
+//For coordinates location relative to the parent
+                    Log.i(
+                        TextViewFoo,
+                        " rootViewGroup1 getLocalVisibleRect ${view.getLocalVisibleRect(rectf)}"
+                    )
+//For coordinates location relative to the screen/display
+
+//For coordinates location relative to the screen/display
+
+                    Log.i(
+                        FOO,
+                        " rootViewGroup1 getGlobalVisibleRect ${view.getGlobalVisibleRect(rectf)}"
+                    )
+                    Log.i("left         :", rectf.left.toString());
+                    Log.i("right        :", rectf.right.toString());
+                    Log.i("top          :", rectf.top.toString());
+                    Log.i("bottom       :", rectf.bottom.toString());
+
+                    Log.i(
+                        TextViewFoo,
+                        " rootViewGroup1 left ${view.left}"
+                    )
+                    Log.i(
+                        TextViewFoo,
+                        " rootViewGroup1 Top ${view.top}"
+                    )
+                    Log.i(
+                        TextViewFoo,
+                        " rootViewGroup1 right ${view.right}"
+                    )
+                    Log.i(
+                        TextViewFoo,
+                        " rootViewGroup1 bottom ${view.bottom}"
+                    )
+
+                    Log.i(
+                        TextViewFoo,
+                        " rootViewGroup1 focus ${view.hasFocus()}"
+                    )
+                    Log.i(
+                        TextViewFoo,
+                        " rootViewGroup1 visibility ${view.visibility}"
+                    )
+
+                    Log.i(
+                        TextViewFoo,
+                        " rootViewGroup1 enable ${view.isEnabled}"
+                    )
+
+
+                    Log.i(
+                        TextViewFoo,
+                        " rootViewGroup1 focusable ${view.isFocusable}"
+                    )
+
+                    Log.i(
+                        TextViewFoo,
+                        " rootViewGroup1 longclicked ${view.isLongClickable}"
+                    )
+
+                    Log.i(
+                        TextViewFoo,
+                        " rootViewGroup1 clickable ${view.isClickable}"
+                    )
+
+                    var firstCordinates = arrayOf(view.left, view.top)
+
+
+                    var secondCordinates = arrayOf(view.right, view.bottom)
+
+                    bounds =
+                        "${Arrays.toString(firstCordinates).replace(" ", "")}${
+                            Arrays.toString(
+                                secondCordinates
+                            ).replace(" ", "")
+                        }"
+
+                    focused = view.isFocused
+                    visible = view.visibility == 0
+                    enabled = view.isEnabled
+                    focusable = view.isFocusable
+                    longClickable = view.isLongClickable
+                    if (view.isScrollContainer) {
+                        scrollable = true
+                    }
+                    isClickable = view.isClickable
+
+
+                    viewText = ""
+                    xPath = "//hierarchy[1]/"
+                    mclazz = "ImageButton"
+                    mType = "XCUIElementTypeImageButtonView"
+                    ContentDesc = ""
+                    // this need to fix after
+                    resourceId= "com.example.myproxywithactivity" +view.findViewById<AppCompatImageButton>(view.id).toString().split("app")[2].split("}")[0]
+                    ActionValue = "--"
+//                    if (!finalView.inputType.toString() .equals( "129")) {
+                    Password = false
+//                    }
+
+                }
+            }
+            false
+        }
+
+    }
+
+    private fun padString(str: String, noOfSpaces: Int): String {
+        if (noOfSpaces <= 0) {
+            return str
+        }
+        val builder = StringBuilder(str.length + noOfSpaces)
+        for (i in 0 until noOfSpaces) {
+            builder.append(' ')
+        }
+        return builder.append(str).toString()
     }
 
 }

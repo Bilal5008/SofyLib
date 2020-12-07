@@ -816,6 +816,7 @@ id SHOW_ALL
 id SHOW_PATH
 id SHOW_PROGRESS
 id SYM
+id a
 id accelerate
 id accessibility_action_clickable_span
 id accessibility_custom_action_0
@@ -880,6 +881,7 @@ id async
 id autoComplete
 id autoCompleteToEnd
 id autoCompleteToStart
+id b
 id barrier
 id baseline
 id beginOnFirstDraw
@@ -888,7 +890,6 @@ id blocking
 id bottom
 id bounce
 id button
-id button2
 id buttonPanel
 id center
 id center_vertical
@@ -925,6 +926,7 @@ id easeInOut
 id easeOut
 id editTextTextPersonName
 id edit_query
+id edittext2
 id end
 id expand_activities_button
 id expanded_menu
@@ -1035,6 +1037,7 @@ id tag_accessibility_clickable_spans
 id tag_accessibility_heading
 id tag_accessibility_pane_title
 id tag_screen_reader_focusable
+id tag_state_description
 id tag_transition_group
 id tag_unhandled_key_event_manager
 id tag_unhandled_key_listeners
