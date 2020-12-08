@@ -60,6 +60,10 @@
         "source": "D:\\JsonReader-main\\app\\src\\main\\res\\layout\\activity_main.xml"
     },
     {
+        "merged": "D:\\JsonReader-main\\app\\build\\intermediates\\res\\merged\\debug\\layout_recyclerview_item.xml.flat",
+        "source": "D:\\JsonReader-main\\app\\src\\main\\res\\layout\\recyclerview_item.xml"
+    },
+    {
         "merged": "D:\\JsonReader-main\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi_ic_launcher_background.png.flat",
         "source": "D:\\JsonReader-main\\app\\build\\generated\\res\\pngs\\debug\\drawable-xhdpi\\ic_launcher_background.png"
     },

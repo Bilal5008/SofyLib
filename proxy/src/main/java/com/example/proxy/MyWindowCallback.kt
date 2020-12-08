@@ -8,21 +8,20 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
 import android.os.Build
+import android.os.Handler
 import android.util.Base64
 import android.util.Log
 import android.view.*
 import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ScrollView
-import android.widget.TextView
+import android.widget.*
 import android.widget.TextView.OnEditorActionListener
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.get
+import androidx.recyclerview.widget.RecyclerView
 import com.an.deviceinfo.device.model.App
 import com.an.deviceinfo.device.model.Device
 import com.example.model.*
@@ -52,8 +51,6 @@ class MyWindowCallback() : Window.Callback {
     var localCallback: Window.Callback? = null
     var activity: Activity? = null
     var mouseEventList: ArrayList<MouseEvent>? = null
-    var mouseEventListFinal: ArrayList<MouseEvent>? = null
-    var finalView: View? = null
     var bounds: String? = "[0,0][0,0]"
     var uId: Int? = 0
     var focused: Boolean? = false
@@ -68,23 +65,16 @@ class MyWindowCallback() : Window.Callback {
     var app: App? = null
     var d: Device? = null
     var xPath: String? = ""
-    var mclazz: String? = "View"
+    var mclazz: String? = ""
     var mType: String? = ""
     var ContentDesc: String? = ""
     var ActionValue: String? = "--"
     var Password: Boolean? = false
-    var xPos = -1
-    var yPos = -1
     var view: View? = null
-
-    var textViewList: ArrayList<AppCompatTextView>? = arrayListOf()
-    var editTextList: ArrayList<AppCompatEditText>? = arrayListOf()
-    var buttonList: ArrayList<AppCompatButton>? = arrayListOf()
-    var imageButtonList: ArrayList<AppCompatImageButton>? = arrayListOf()
-    var addingListenerBoolean: Boolean = true
 
     companion object {
         const val FOO = "MyWindowCallback"
+        const val TOUCHCALLBACKS = "NewCallbacks"
         const val TextViewFoo = "TextView"
         const val EditTextFoo = "EditText"
     }
@@ -93,144 +83,70 @@ class MyWindowCallback() : Window.Callback {
         this.activity = activity
         this.localCallback = localCallback
         Log.i(FOO, "Registringcallbacks*******")
-//        var driver: WebDriver = AndroidDriver(URL("http://127.0.0.1:4723/wd/hub"), capabilities)
-        mouseEventList = arrayListOf()
-//        var viewGroupSize = ((((this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
-//            0
-//        ) as? ViewGroup)?.get(0) as ViewGroup).get(0) as ViewGroup).childCount
 
+        mouseEventList = arrayListOf()
         view =
             (this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
                 0
             )
-
         if (this.activity != null && this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup != null) {
             debugViewIds(view!!, "NEW_LOGS")
-
-//            for (i in 0 until viewGroupSize!!) {
-//                finalView = ((((this.activity?.window?.decorView?.findViewById<View>(R.id.content) as? ViewGroup)?.getChildAt(
-//                    0
-//                ) as? ViewGroup)?.get(0) as ViewGroup).get(0) as ViewGroup).get(i)
-//
-//                if (finalView is TextView) {
-//                    addTextViewListener(finalView as TextView, i)
-//                }
-//                if (finalView is Button) {
-//                    addOnTouchListener(finalView as Button, i, activity)
-//                }
-//                if (finalView is EditText) {
-//                    addOnTouchListenerForEditText(finalView as EditText, i, activity)
-//                }
-//                if (finalView is EditText) {
-//                    addSetTextListener(finalView as EditText, i, activity)
-//                }
-//
-//                Log.i(EditTextFoo, "UID $i")
-//
-//            }
-
-
         }
     }
 
 
     private fun addTextViewListener(finalView: TextView, i: Int) {
         finalView?.setOnTouchListener { view, motionEvent ->
-            Log.i(TextViewFoo, "FirstAddedTOuchListener $view")
+            val action = motionEvent.actionMasked
+            var actionCode = ""
+            when (action) {
+                MotionEvent.ACTION_DOWN -> actionCode = "PRESS"
+                MotionEvent.ACTION_MOVE -> actionCode = "DRAG"
+                MotionEvent.ACTION_UP -> actionCode = "RELEASE"
+            }
+            val index = motionEvent.actionIndex
 
-            when (motionEvent?.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    Log.i(TextViewFoo, " rootViewGroup1 viewcheck ${view?.visibility}")
+            when {
+                actionCode === "PRESS" -> {
+
+                    mouseEventList?.clear()
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
+                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            actionCode
+                        )
+                    )
+
                 }
-                MotionEvent.ACTION_UP -> {
-                    Log.i("ActionUp  ", "TextVIew")
+                actionCode === "DRAG" -> {
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
+                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            actionCode
+                        )
+                    )
+                }
+                actionCode === "RELEASE" -> {
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            -1,
+                            -1,
+                            actionCode
+                        )
+                    )
+
                     val rootGlobalRect = Rect()
                     view.getGlobalVisibleRect(rootGlobalRect);
-                    val location = IntArray(2)
-                    Log.i(TextViewFoo, " rootViewGroup1 viewcheck ${view?.visibility}")
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 viewcheck ${
-                            view?.getLocationOnScreen(location).toString()
-                        }"
-                    )
                     Log.i(TextViewFoo, " rootViewGroup1 UID ${i}")
 
                     uId = i
-                    val rectf = Rect()
-
-//For coordinates location relative to the parent
-
-//For coordinates location relative to the parent
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 getLocalVisibleRect ${view.getLocalVisibleRect(rectf)}"
-                    )
-//For coordinates location relative to the screen/display
-
-//For coordinates location relative to the screen/display
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 getGlobalVisibleRect ${view.getGlobalVisibleRect(rectf)}"
-                    )
-                    Log.i("left         :", rectf.left.toString());
-                    Log.i("right        :", rectf.right.toString());
-                    Log.i("top          :", rectf.top.toString());
-                    Log.i("bottom       :", rectf.bottom.toString());
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 left ${view.left}"
-                    )
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 Top ${view.top}"
-                    )
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 right ${view.right}"
-                    )
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 bottom ${view.bottom}"
-                    )
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 focus ${view.hasFocus()}"
-                    )
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 visibility ${view.visibility}"
-                    )
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 enable ${view.isEnabled}"
-                    )
-
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 focusable ${view.isFocusable}"
-                    )
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 longclicked ${view.isLongClickable}"
-                    )
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 clickable ${view.isClickable}"
-                    )
-
                     var firstCordinates = arrayOf(view.left, view.top)
-
-
                     var secondCordinates = arrayOf(view.right, view.bottom)
-
                     bounds =
                         "${Arrays.toString(firstCordinates).replace(" ", "")}${
                             Arrays.toString(
@@ -255,9 +171,67 @@ class MyWindowCallback() : Window.Callback {
                     mType = "XCUIElementTypeTextView"
                     ContentDesc = ""
                     ActionValue = "--"
-//                    if (!finalView.inputType.toString() .equals( "129")) {
+
                     Password = false
-//                    }
+
+                    app = App(activity)
+                    print("this is Needed + $mType + $mclazz")
+                    var selectedComponent = SelectedComponent(
+                        `package` = app?.packageName,
+                        bounds = bounds.toString(),
+                        uId = uId,
+                        focused = focused,
+                        focusable = focusable,
+                        clickable = isClickable,
+                        enabled = enabled,
+                        longClickable = longClickable,
+                        scrollable = scrollable,
+                        visible = visible,
+                        resourceId = resourceId,
+                        xpath = xPath,
+                        text = viewText,
+                        clazz = mclazz,
+                        Type = mType,
+                        ContentDesc = ContentDesc,
+                        Password = Password
+
+                    )
+                    var device = DeviceConfigured(
+
+                        true,
+                        "",
+                        d!!.manufacturer,
+                        getScreenResolution(this.activity),
+                        formatSize(getRamForDevice(this.activity)),
+                        "DEFAULT",
+                        d!!.manufacturer,
+                        d!!.model,
+                        d!!.board,
+                        System.getProperty("os.arch"),
+                        d!!.osVersion,
+                        Build.VERSION.SDK_INT.toString(),
+                        d!!.device,
+                        "ANDROID"
+                    )
+                    var appInfo = AppInfo(
+                        app?.packageName,
+                        app?.appName,
+                        app?.appVersionCode.toString(),
+                        Build.VERSION.SDK_INT.toString(),
+                        null,
+                        null,
+                        "appIconFile",
+                        "appFile"
+                    )
+                    var action = "CLICK"
+                    get64EncodedString(
+                        writeJSONObjectListener,
+                        selectedComponent,
+                        action,
+                        device,
+                        appInfo
+                    )
+
 
                 }
             }
@@ -275,95 +249,10 @@ class MyWindowCallback() : Window.Callback {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
                 if (finalView.length() > 0) {
-                    Log.i(EditTextFoo, "View ${finalView.text}")
-                    Log.i(EditTextFoo, "UID $i")
-
-
                     val rootGlobalRect = Rect()
                     view.getGlobalVisibleRect(rootGlobalRect);
-                    val location = IntArray(2)
-                    Log.i(TextViewFoo, " rootViewGroup1 viewcheck ${view?.visibility}")
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 viewcheck ${
-                            view?.getLocationOnScreen(location).toString()
-                        }"
-                    )
-                    Log.i(TextViewFoo, " rootViewGroup1 UID ${i}")
-
                     uId = i
-                    val rectf = Rect()
-
-//For coordinates location relative to the parent
-
-//For coordinates location relative to the parent
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 getLocalVisibleRect ${view.getLocalVisibleRect(rectf)}"
-                    )
-//For coordinates location relative to the screen/display
-
-//For coordinates location relative to the screen/display
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 getGlobalVisibleRect ${view.getGlobalVisibleRect(rectf)}"
-                    )
-                    Log.i("left         :", rectf.left.toString());
-                    Log.i("right        :", rectf.right.toString());
-                    Log.i("top          :", rectf.top.toString());
-                    Log.i("bottom       :", rectf.bottom.toString());
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 left ${view.left}"
-                    )
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 Top ${view.top}"
-                    )
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 right ${view.right}"
-                    )
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 bottom ${view.bottom}"
-                    )
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 focus ${view.hasFocus()}"
-                    )
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 visibility ${view.visibility}"
-                    )
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 enable ${view.isEnabled}"
-                    )
-
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 focusable ${view.isFocusable}"
-                    )
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 longclicked ${view.isLongClickable}"
-                    )
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 clickable ${view.isClickable}"
-                    )
-
                     var firstCordinates = arrayOf(view.left, view.top)
-
-
                     var secondCordinates = arrayOf(view.right, view.bottom)
 
                     bounds =
@@ -391,16 +280,6 @@ class MyWindowCallback() : Window.Callback {
                     ContentDesc = "dummy"
                     ActionValue = viewText
                     Password = false
-
-//                    if (view.inputType == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
-//                        mclazz = "SecureTextField"
-//                        mType = "XCUIElementTypeSecureTextField"
-//                    }
-
-
-                    // settext ---- > dummy
-                    // click on edittext -- >EditText
-
 
                     mouseEventList = ArrayList()
                     app = App(activity)
@@ -476,104 +355,65 @@ class MyWindowCallback() : Window.Callback {
 
     }
 
-    private fun addOnTouchListener(finalView: Button, i: Int) {
+    private fun addOnButtonClickListener(finalView: Button, i: Int) {
         finalView?.setOnTouchListener { view, motionEvent ->
-            Log.i(FOO, "FirstAddedTOuchListener $view")
-            Log.i(FOO, "addOnTouchListener $view")
-
-            when (motionEvent?.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    Log.i(FOO, " rootViewGroup1 viewcheck ${view?.visibility}")
+            val action = motionEvent.actionMasked
+            var actionCode = ""
+            when (action) {
+                MotionEvent.ACTION_DOWN -> actionCode = "PRESS"
+                MotionEvent.ACTION_MOVE -> actionCode = "DRAG"
+                MotionEvent.ACTION_UP -> actionCode = "RELEASE"
+            }
+            val index = motionEvent.actionIndex
+            when {
+                actionCode === "PRESS" -> {
+                    mouseEventList?.clear()
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
+                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            actionCode
+                        )
+                    )
+                    Log.i(TOUCHCALLBACKS, " rootViewGroup1 viewcheck ${view?.visibility}")
                 }
-                MotionEvent.ACTION_UP -> {
+                actionCode === "DRAG" -> {
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
+                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            actionCode
+                        )
+                    )
+
+                }
+                actionCode === "RELEASE" -> {
+
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            -1,
+                            -1,
+                            actionCode
+                        )
+                    )
+
                     Log.i("ActionUp  ", "Button")
                     val rootGlobalRect = Rect()
                     view.getGlobalVisibleRect(rootGlobalRect);
                     val location = IntArray(2)
-                    Log.i(FOO, " rootViewGroup1 viewcheck ${view?.visibility}")
+                    Log.i(TOUCHCALLBACKS, " rootViewGroup1 viewcheck ${view?.visibility}")
                     Log.i(
-                        FOO,
+                        TOUCHCALLBACKS,
                         " rootViewGroup1 viewcheck ${
                             view?.getLocationOnScreen(location).toString()
                         }"
                     )
-                    Log.i(FOO, " rootViewGroup1 UID ${i}")
-
                     uId = i
-                    val rectf = Rect()
-
-//For coordinates location relative to the parent
-
-//For coordinates location relative to the parent
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 getLocalVisibleRect ${view.getLocalVisibleRect(rectf)}"
-                    )
-//For coordinates location relative to the screen/display
-
-//For coordinates location relative to the screen/display
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 getGlobalVisibleRect ${view.getGlobalVisibleRect(rectf)}"
-                    )
-                    Log.i("left         :", rectf.left.toString());
-                    Log.i("right        :", rectf.right.toString());
-                    Log.i("top          :", rectf.top.toString());
-                    Log.i("bottom       :", rectf.bottom.toString());
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 left ${view.left}"
-                    )
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 Top ${view.top}"
-                    )
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 right ${view.right}"
-                    )
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 bottom ${view.bottom}"
-                    )
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 focus ${view.hasFocus()}"
-                    )
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 visibility ${view.visibility}"
-                    )
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 enable ${view.isEnabled}"
-                    )
-
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 focusable ${view.isFocusable}"
-                    )
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 longclicked ${view.isLongClickable}"
-                    )
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 clickable ${view.isClickable}"
-                    )
-
                     var firstCordinates = arrayOf(view.left, view.top)
-
-
                     var secondCordinates = arrayOf(view.right, view.bottom)
-
                     bounds = "${Arrays.toString(firstCordinates).replace(" ", "")}${
                         Arrays.toString(
                             secondCordinates
@@ -599,274 +439,7 @@ class MyWindowCallback() : Window.Callback {
                     ActionValue = "--"
                     Password = false
 
-
-                }
-            }
-            false
-        }
-    }
-
-
-    private fun addOnTouchListenerForEditText(finalView: EditText, i: Int) {
-        finalView?.setOnTouchListener { view, motionEvent ->
-            Log.i(FOO, "FirstAddedTOuchListener $view")
-
-            when (motionEvent?.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    Log.i(FOO, " rootViewGroup1 viewcheck ${view?.visibility}")
-                }
-                MotionEvent.ACTION_UP -> {
-                    Log.i("ActionUp  ", "EditText")
-                    val rootGlobalRect = Rect()
-                    view.getGlobalVisibleRect(rootGlobalRect);
-                    val location = IntArray(2)
-                    Log.i(FOO, " rootViewGroup1 viewcheck ${view?.visibility}")
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 viewcheck ${
-                            view?.getLocationOnScreen(location).toString()
-                        }"
-                    )
-                    Log.i(FOO, " rootViewGroup1 UID ${i}")
-
-                    uId = i
-                    val rectf = Rect()
-
-//For coordinates location relative to the parent
-
-//For coordinates location relative to the parent
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 getLocalVisibleRect ${view.getLocalVisibleRect(rectf)}"
-                    )
-//For coordinates location relative to the screen/display
-
-//For coordinates location relative to the screen/display
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 getGlobalVisibleRect ${view.getGlobalVisibleRect(rectf)}"
-                    )
-                    Log.i("left         :", rectf.left.toString());
-                    Log.i("right        :", rectf.right.toString());
-                    Log.i("top          :", rectf.top.toString());
-                    Log.i("bottom       :", rectf.bottom.toString());
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 left ${view.left}"
-                    )
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 Top ${view.top}"
-                    )
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 right ${view.right}"
-                    )
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 bottom ${view.bottom}"
-                    )
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 focus ${view.hasFocus()}"
-                    )
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 visibility ${view.visibility}"
-                    )
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 enable ${view.isEnabled}"
-                    )
-
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 focusable ${view.isFocusable}"
-                    )
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 longclicked ${view.isLongClickable}"
-                    )
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 clickable ${view.isClickable}"
-                    )
-
-                    var firstCordinates = arrayOf(view.left, view.top)
-
-
-                    var secondCordinates = arrayOf(view.right, view.bottom)
-
-                    bounds =
-                        "${Arrays.toString(firstCordinates).replace(" ", "")}${
-                            Arrays.toString(
-                                secondCordinates
-                            ).replace(" ", "")
-                        }"
-
-                    focused = view.isFocused
-                    visible = view.visibility == 0
-                    enabled = view.isEnabled
-                    focusable = view.isFocusable
-                    longClickable = view.isLongClickable
-                    if (view.isScrollContainer) {
-                        scrollable = true
-                    }
-                    isClickable = view.isClickable
-
-                    view.findViewById<EditText>(view.id)
-                    viewText = (view as EditText).text.toString()
-                    xPath = "//hierarchy[1]/"
-                    mclazz = "EditText"
-                    mType = "XCUIElementTypeEditText"
-                    ContentDesc = viewText
-                    ActionValue = "--"
-                    if (finalView.inputType.toString().equals("129")) {
-                        Password = true
-                    }
-
-
-                }
-            }
-            false
-        }
-    }
-
-    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        return localCallback!!.dispatchKeyEvent(event)
-    }
-
-    @SuppressLint("NewApi")
-    override fun dispatchKeyShortcutEvent(event: KeyEvent): Boolean {
-        return localCallback!!.dispatchKeyShortcutEvent(event)
-    }
-
-    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-
-        val action = event.actionMasked
-        var actionCode = ""
-        when (action) {
-            MotionEvent.ACTION_DOWN -> actionCode = "PRESS"
-            MotionEvent.ACTION_MOVE -> actionCode = "DRAG"
-            MotionEvent.ACTION_UP -> actionCode = "RELEASE"
-        }
-        Log.d(FOO, "The action is : $actionCode")
-//        Log.d(FOO, "The action is time stemp is  : ${System.currentTimeMillis()}")
-//        Log.d(FOO, "The action is time dateformat is  : ${getDateTime(System.currentTimeMillis())}")
-
-
-        val index = event.actionIndex
-
-
-//        if (actionCode === "Down") {
-//
-//
-////            Log.d(FOO, "xPosition: $xPos, yPosition: $yPos  $actionCode")
-//        }
-////        else if (actionCode === "Move") {
-////            xPos = event.getX(index).toInt()
-////            yPos = event.getY(index).toInt()
-////            upfinalPositionx = xPos
-////            upfinalPositiony = yPos
-////            Log.d(FOO, "xPosition: $xPos, yPosition: $yPos  $actionCode")
-////        }
-////        else if (actionCode === "Up"){
-////
-////           Log.d(FOO, "xPosition: $xPos, yPosition: $yPos  $actionCode")
-////        }
-//        else if (actionCode === "Pointer Down"){
-//
-//           //     Log.d(FOO, "pointerdown")
-//        }
-//        if (downfinalPositionx == upfinalPositionx  && downfinalPositiony ==upfinalPositiony)
-//        {
-//            Log.d(FOO, "remove all move")
-//
-//        }
-//        else
-//        {
-//        //    Log.d(FOO, "do not remove all move")
-//        }
-
-
-        if (localCallback!!.dispatchTouchEvent(event)) {
-
-
-            //    Log.d(FOO, "Wrting on file")
-
-//            val rootViewGroup = activity?.window?.decorView?.findViewById<ViewGroup>(R.id.)?.childCount
-//            val getChildView = activity?.window?.decorView?.findViewById<ViewGroup>(R.id.content)?.children
-
-
-//            val x = event.x.toInt()
-//
-//            for (i in 0 until rootViewGroup!!) {
-////                val c: View = getChildView
-////                if (x > c.left && x < c.right) {
-////                    return c.onTouchEvent(event)
-////                }
-//            }
-
-
-            when {
-                actionCode === "PRESS" -> {
-
-//                    if (v !is EditText) {
-
-
-                    xPos = event.getX(index).toInt()
-                    yPos = event.getY(index).toInt()
-
-
-                    Log.d(FOO, "PRESS on  $xPos - $yPos")
-                    mouseEventList?.add(
-                        MouseEvent(
-                            System.currentTimeMillis(),
-                            factorForResolutionWidth(xPos),
-                            factorForResolutionLenght(yPos),
-                            actionCode
-                        )
-                    )
-//                    }
-                }
-                actionCode === "DRAG" -> {
-
-//                    if (v !is EditText) {
-
-
-                    xPos = event.getX(index).toInt()
-                    yPos = event.getY(index).toInt()
-                    Log.d(FOO, "MOVE on  $xPos - $yPos")
-                    mouseEventList?.add(
-                        MouseEvent(
-                            System.currentTimeMillis(),
-                            factorForResolutionWidth(xPos),
-                            factorForResolutionLenght(yPos),
-                            actionCode
-                        )
-                    )
-
-
-                }
-                actionCode === "RELEASE" -> {
-
                     d = Device(activity)
-                    mouseEventList?.add(
-                        MouseEvent(
-                            System.currentTimeMillis(),
-                            -1,
-                            -1,
-                            actionCode
-                        )
-                    )
-
                     app = App(activity)
                     print("this is Needed + $mType + $mclazz")
                     var selectedComponent = SelectedComponent(
@@ -889,7 +462,6 @@ class MyWindowCallback() : Window.Callback {
                         Password = Password
 
                     )
-
                     var device = DeviceConfigured(
 
                         true,
@@ -918,9 +490,148 @@ class MyWindowCallback() : Window.Callback {
                         "appFile"
                     )
                     var action = "CLICK"
-                    if (mclazz.equals("View")) {
-                        action = "SWIPE"
+                    get64EncodedString(
+                        writeJSONObjectListener,
+                        selectedComponent,
+                        action,
+                        device,
+                        appInfo
+                    )
+                }
+            }
+            false
+        }
+    }
+
+
+    private fun addOnEditTextListener(finalView: EditText, i: Int) {
+        finalView?.setOnTouchListener { view, motionEvent ->
+            Log.i(FOO, "FirstAddedTOuchListener $view")
+
+            val index = motionEvent.actionIndex
+            val action = motionEvent.actionMasked
+            var actionCode = ""
+            when (action) {
+                MotionEvent.ACTION_DOWN -> actionCode = "PRESS"
+                MotionEvent.ACTION_MOVE -> actionCode = "DRAG"
+                MotionEvent.ACTION_UP -> actionCode = "RELEASE"
+            }
+            when {
+                actionCode === "PRESS" -> {
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
+                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            actionCode
+                        )
+                    )
+                }
+                actionCode === "DRAG" -> {
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
+                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            actionCode
+                        )
+                    )
+
+                }
+                actionCode === "RELEASE" -> {
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            -1,
+                            -1,
+                            actionCode
+                        )
+                    )
+
+
+                    val rootGlobalRect = Rect()
+                    view.getGlobalVisibleRect(rootGlobalRect);
+                    uId = i
+                    var firstCordinates = arrayOf(view.left, view.top)
+                    var secondCordinates = arrayOf(view.right, view.bottom)
+                    bounds =
+                        "${Arrays.toString(firstCordinates).replace(" ", "")}${
+                            Arrays.toString(
+                                secondCordinates
+                            ).replace(" ", "")
+                        }"
+
+                    focused = view.isFocused
+                    visible = view.visibility == 0
+                    enabled = view.isEnabled
+                    focusable = view.isFocusable
+                    longClickable = view.isLongClickable
+                    if (view.isScrollContainer) {
+                        scrollable = true
                     }
+                    isClickable = view.isClickable
+
+                    view.findViewById<EditText>(view.id)
+                    viewText = (view as EditText).text.toString()
+                    xPath = "//hierarchy[1]/"
+                    mclazz = "EditText"
+                    mType = "XCUIElementTypeEditText"
+                    ContentDesc = viewText
+                    ActionValue = "--"
+                    if (finalView.inputType.toString().equals("129")) {
+                        Password = true
+                    }
+                    d = Device(activity)
+                    app = App(activity)
+                    print("this is Needed + $mType + $mclazz")
+                    var selectedComponent = SelectedComponent(
+                        `package` = app?.packageName,
+                        bounds = bounds.toString(),
+                        uId = uId,
+                        focused = focused,
+                        focusable = focusable,
+                        clickable = isClickable,
+                        enabled = enabled,
+                        longClickable = longClickable,
+                        scrollable = scrollable,
+                        visible = visible,
+                        resourceId = resourceId,
+                        xpath = xPath,
+                        text = viewText,
+                        clazz = mclazz,
+                        Type = mType,
+                        ContentDesc = ContentDesc,
+                        Password = Password
+
+                    )
+                    var device = DeviceConfigured(
+
+                        true,
+                        "",
+                        d!!.manufacturer,
+                        getScreenResolution(this.activity),
+                        formatSize(getRamForDevice(this.activity)),
+                        "DEFAULT",
+                        d!!.manufacturer,
+                        d!!.model,
+                        d!!.board,
+                        System.getProperty("os.arch"),
+                        d!!.osVersion,
+                        Build.VERSION.SDK_INT.toString(),
+                        d!!.device,
+                        "ANDROID"
+                    )
+                    var appInfo = AppInfo(
+                        app?.packageName,
+                        app?.appName,
+                        app?.appVersionCode.toString(),
+                        Build.VERSION.SDK_INT.toString(),
+                        null,
+                        null,
+                        "appIconFile",
+                        "appFile"
+                    )
+                    var action = "CLICK"
 
                     get64EncodedString(
                         writeJSONObjectListener,
@@ -930,18 +641,29 @@ class MyWindowCallback() : Window.Callback {
                         appInfo
                     )
 
-
                 }
-
-
-//                }
             }
 
-
+            false
         }
-        return false
-
     }
+
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        return localCallback!!.dispatchKeyEvent(event)
+    }
+
+    @SuppressLint("NewApi")
+    override fun dispatchKeyShortcutEvent(event: KeyEvent): Boolean {
+        return localCallback!!.dispatchKeyShortcutEvent(event)
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        Log.i(TOUCHCALLBACKS, "dispatchTouchEvent $view")
+        localCallback!!.dispatchTouchEvent(event)
+        return true
+    }
+
 
     private fun ReadJsonOnMouseEvent(obj: JSONObject) {
         var convertedObject: JsonObject? = null
@@ -1249,28 +971,6 @@ class MyWindowCallback() : Window.Callback {
         }
     }
 
-    fun addingListeners(
-        textViewList: ArrayList<AppCompatTextView>?,
-        buttonList: ArrayList<AppCompatButton>?,
-        editTextList: ArrayList<AppCompatEditText>?,
-        imageButtonList: ArrayList<AppCompatImageButton>?
-    ) {
-
-        for (i in 0 until textViewList!!.size) {
-            addTextViewListener(textViewList[i], i)
-        }
-        for (i in 0 until buttonList!!.size) {
-            addOnTouchListener(buttonList[i], i)
-        }
-        for (i in 0 until editTextList!!.size) {
-            addOnTouchListenerForEditText(editTextList[i], i)
-            addSetTextListener(editTextList[i], i)
-        }
-//        for (i in 0 until imageButtonList!!.size) {
-//            addOnTouchListenerForEditText(imageButtonList[i], i)
-//        }
-    }
-
 
     val writeJSONObjectListener = object : writeJSONObjectListener {
         override fun onSuccess(
@@ -1363,7 +1063,7 @@ class MyWindowCallback() : Window.Callback {
     fun debugViewIds(view: View, logtag: String?): View {
         Log.v(logtag, "traversing: " + view.javaClass.simpleName + ", id: " + view.id)
         return if (view.parent != null && view.parent is ViewGroup) {
-            if(view is ScrollView) {
+            if (view is ScrollView) {
                 addingSwipOnLayout(view)
             }
             debugViewIds(view.parent as View, logtag)
@@ -1374,30 +1074,297 @@ class MyWindowCallback() : Window.Callback {
     }
 
     private fun addingSwipOnLayout(view: View) {
-        view.setOnTouchListener(object :OnSwipeTouchListener(activity){
+        view.setOnTouchListener(object : OnSwipeTouchListener(activity) {
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                val action = event?.actionMasked
+                var actionCode = ""
+                when (action) {
+                    MotionEvent.ACTION_DOWN -> actionCode = "PRESS"
+                    MotionEvent.ACTION_MOVE -> actionCode = "DRAG"
+                    MotionEvent.ACTION_UP -> actionCode = "RELEASE"
+                }
+                when {
+                    actionCode === "PRESS" -> {
+                        mouseEventList?.clear()
+                        if (event != null) {
+                            mouseEventList?.add(
+                                MouseEvent(
+                                    System.currentTimeMillis(),
+                                    factorForResolutionWidth(event.getX().toInt()),
+                                    factorForResolutionLenght(event.getY().toInt()),
+                                    actionCode
+                                )
+                            )
+                        }
+                        Log.i(TOUCHCALLBACKS, " rootViewGroup1 viewcheck ${view?.visibility}")
+                    }
+                    actionCode === "DRAG" -> {
+                        mouseEventList?.add(
+                            MouseEvent(
+                                System.currentTimeMillis(),
+                                factorForResolutionWidth(event?.getX()?.toInt()!!),
+                                factorForResolutionLenght(event.getY().toInt()),
+                                actionCode
+                            )
+                        )
+
+                    }
+                    actionCode === "RELEASE" -> {
+                        mouseEventList?.add(
+                            MouseEvent(
+                                System.currentTimeMillis(),
+                                -1,
+                                -1,
+                                actionCode
+                            )
+                        )
 
 
+                        var firstCordinates = arrayOf(view.left, view.top)
+                        var secondCordinates = arrayOf(view.right, view.bottom)
+
+                        bounds = "${Arrays.toString(firstCordinates).replace(" ", "")}${
+                            Arrays.toString(
+                                secondCordinates
+                            ).replace(" ", "")
+                        }"
+
+                        app = App(activity)
+                        print("this is Needed + $mType + $mclazz")
+                        var selectedComponent = SelectedComponent(
+                            `package` = app?.packageName,
+                            bounds = bounds.toString(),
+                            uId = uId,
+                            focused = focused,
+                            focusable = focusable,
+                            clickable = isClickable,
+                            enabled = enabled,
+                            longClickable = longClickable,
+                             // this is changed for swipe
+                            scrollable = true,
+                            visible = visible,
+                            resourceId = resourceId,
+                            xpath = xPath,
+                            text = viewText,
+                            // this is changed for swipe
+                            clazz = "ViewGroup",
+                            Type = mType,
+                            ContentDesc = ContentDesc,
+                            Password = Password
+
+                        )
+
+                        var device = DeviceConfigured(
+
+                            true,
+                            "",
+                            d!!.manufacturer,
+                            getScreenResolution(activity),
+                            formatSize(getRamForDevice(activity)),
+                            "DEFAULT",
+                            d!!.manufacturer,
+                            d!!.model,
+                            d!!.board,
+                            System.getProperty("os.arch"),
+                            d!!.osVersion,
+                            Build.VERSION.SDK_INT.toString(),
+                            d!!.device,
+                            "ANDROID"
+                        )
+                        var appInfo = AppInfo(
+                            app?.packageName,
+                            app?.appName,
+                            app?.appVersionCode.toString(),
+                            Build.VERSION.SDK_INT.toString(),
+                            null,
+                            null,
+                            "appIconFile",
+                            "appFile"
+                        )
+
+                        get64EncodedString(
+                            writeJSONObjectListener,
+                            selectedComponent,
+                            "SWIPE",
+                            device,
+                            appInfo
+                        )
+                    }
+                }
 
                 return super.onTouch(v, event)
             }
+        })
 
-            override fun onSwipeRight() {
-                super.onSwipeRight()
-            }
 
-            override fun onSwipeLeft() {
-                super.onSwipeLeft()
-            }
-
-            override fun onSwipeTop() {
-                super.onSwipeTop()
-            }
-
-            override fun onSwipeBottom() {
-                super.onSwipeBottom()
-            }
-        });
+//        view.setOnTouchListener(object : OnSwipeTouchListener(activity) {
+//            override fun onTouch(v: View?, motionEvent: MotionEvent?): Boolean {
+//
+//
+//                val action = motionEvent?.actionMasked
+//                var actionCode = ""
+//                when (action) {
+//                    MotionEvent.ACTION_DOWN -> actionCode = "PRESS"
+//                    MotionEvent.ACTION_MOVE -> actionCode = "DRAG"
+//                    MotionEvent.ACTION_UP -> actionCode = "RELEASE"
+//                }
+//                val index = motionEvent?.actionIndex
+//                when {
+//                    actionCode === "PRESS" -> {
+//                        mouseEventList?.clear()
+//                        if (motionEvent != null) {
+//                            mouseEventList?.add(
+//                                MouseEvent(
+//                                    System.currentTimeMillis(),
+//                                    factorForResolutionWidth(motionEvent.getX(index).toInt()),
+//                                    factorForResolutionLenght(motionEvent.getY(index).toInt()),
+//                                    actionCode
+//                                )
+//                            )
+//                        }
+//                        Log.i(TOUCHCALLBACKS, " rootViewGroup1 viewcheck ${view?.visibility}")
+//                    }
+//                    actionCode === "DRAG" -> {
+//                        mouseEventList?.add(
+//                            MouseEvent(
+//                                System.currentTimeMillis(),
+//                                factorForResolutionWidth(motionEvent?.getX(index)?.toInt()!!),
+//                                factorForResolutionLenght(motionEvent?.getY(index)?.toInt()),
+//                                actionCode
+//                            )
+//                        )
+//
+//                    }
+//                    actionCode === "RELEASE" -> {
+//
+//                        Log.i("ActionUp  ", "Button")
+//                        val rootGlobalRect = Rect()
+//                        view.getGlobalVisibleRect(rootGlobalRect);
+//                        val location = IntArray(2)
+//                        Log.i(TOUCHCALLBACKS, " rootViewGroup1 viewcheck ${view?.visibility}")
+//                        Log.i(
+//                            TOUCHCALLBACKS,
+//                            " rootViewGroup1 viewcheck ${
+//                                view?.getLocationOnScreen(location).toString()
+//                            }"
+//                        )
+//                        uId = i
+//                        var firstCordinates = arrayOf(view.left, view.top)
+//                        var secondCordinates = arrayOf(view.right, view.bottom)
+//                        bounds = "${Arrays.toString(firstCordinates).replace(" ", "")}${
+//                            Arrays.toString(
+//                                secondCordinates
+//                            ).replace(" ", "")
+//                        }"
+//
+//                        focused = view.isFocused
+//                        visible = view.visibility == 0
+//                        enabled = view.isEnabled
+//                        focusable = view.isFocusable
+//                        longClickable = view.isLongClickable
+//                        if (view.isScrollContainer) {
+//                            scrollable = true
+//                        }
+//                        isClickable = view.isClickable
+//
+//                        view.findViewById<Button>(view.id)
+//                        viewText = (view as Button).text.toString()
+//                        xPath = "//hierarchy[1]/"
+//                        mclazz = "Button"
+//                        mType = "XCUIElementTypeButton"
+//                        ContentDesc = "Button"
+//                        ActionValue = "--"
+//                        Password = false
+//
+//                        d = Device(activity)
+//                        mouseEventList?.add(
+//                            MouseEvent(
+//                                System.currentTimeMillis(),
+//                                -1,
+//                                -1,
+//                                actionCode
+//                            )
+//                        )
+//
+//                        app = App(activity)
+//                        print("this is Needed + $mType + $mclazz")
+//                        var selectedComponent = SelectedComponent(
+//                            `package` = app?.packageName,
+//                            bounds = bounds.toString(),
+//                            uId = uId,
+//                            focused = focused,
+//                            focusable = focusable,
+//                            clickable = isClickable,
+//                            enabled = enabled,
+//                            longClickable = longClickable,
+//                            scrollable = scrollable,
+//                            visible = visible,
+//                            resourceId = resourceId,
+//                            xpath = xPath,
+//                            text = viewText,
+//                            clazz = mclazz,
+//                            Type = mType,
+//                            ContentDesc = ContentDesc,
+//                            Password = Password
+//
+//                        )
+//                        var device = DeviceConfigured(
+//
+//                            true,
+//                            "",
+//                            d!!.manufacturer,
+//                            getScreenResolution(activity),
+//                            formatSize(getRamForDevice(activity)),
+//                            "DEFAULT",
+//                            d!!.manufacturer,
+//                            d!!.model,
+//                            d!!.board,
+//                            System.getProperty("os.arch"),
+//                            d!!.osVersion,
+//                            Build.VERSION.SDK_INT.toString(),
+//                            d!!.device,
+//                            "ANDROID"
+//                        )
+//                        var appInfo = AppInfo(
+//                            app?.packageName,
+//                            app?.appName,
+//                            app?.appVersionCode.toString(),
+//                            Build.VERSION.SDK_INT.toString(),
+//                            null,
+//                            null,
+//                            "appIconFile",
+//                            "appFile"
+//                        )
+//                        var action = "SWIPE"
+//                        get64EncodedString(
+//                            writeJSONObjectListener,
+//                            selectedComponent,
+//                            action,
+//                            device,
+//                            appInfo
+//                        )
+//
+//
+//
+//                return super.onTouch(v, motionEvent)
+//            }
+//
+//            override fun onSwipeRight() {
+//                super.onSwipeRight()
+//            }
+//
+//            override fun onSwipeLeft() {
+//                super.onSwipeLeft()
+//            }
+//
+//            override fun onSwipeTop() {
+//                super.onSwipeTop()
+//            }
+//
+//            override fun onSwipeBottom() {
+//                super.onSwipeBottom()
+//            }
+//        })
 
 
     }
@@ -1416,21 +1383,6 @@ class MyWindowCallback() : Window.Callback {
             }
             Log.v(logtag, "this is calling")
 
-            if (addingListenerBoolean) {
-//                addingListenerBoolean = false
-                Log.v(logtag, "this should be call last")
-                Log.v(logtag, "textViewList-----SIZE" + textViewList?.size)
-                Log.v(logtag, "buttonList-----SIZE" + buttonList?.size)
-                Log.v(logtag, "editTextList-----SIZE" + editTextList?.size)
-                Log.v(logtag, "imageButtonList-----SIZE" + imageButtonList?.size)
-
-//                addingListeners(
-//                     textViewList,
-//                     buttonList,
-//                     editTextList,
-//                     imageButtonList
-//                )
-            }
 
         }
 
@@ -1438,139 +1390,423 @@ class MyWindowCallback() : Window.Callback {
 
     private fun addListenering(finalView: View?, i: Int): Boolean {
         if (finalView is AppCompatTextView) {
-
             addTextViewListener(finalView, i)
-//             textViewList?.add(finalView as AppCompatTextView)
-            // addTextViewListener(finalView as TextView, i, activity)
         }
         if (finalView is AppCompatButton) {
-            addOnTouchListener(finalView, i)
-//             buttonList?.add(finalView as AppCompatButton)
-            //addOnTouchListener(finalView as Button, i, activity)
+            addOnButtonClickListener(finalView, i)
         }
+
         if (finalView is AppCompatEditText) {
             addSetTextListener(finalView, i)
-            addOnTouchListenerForEditText(finalView, i)
-//             editTextList?.add(finalView as AppCompatEditText)
-
-            //addOnTouchListenerForEditText(finalView as EditText, i, activity)
+            addOnEditTextListener(finalView, i)
         }
         if (finalView is AppCompatImageButton) {
-//            imageButtonList?.add(finalView as AppCompatImageButton)
+            addImageButtonListener(finalView, i)
+        }
+        if (finalView is RecyclerView) {
+            // Use
+            val handler = Handler()
+            handler.postDelayed({
+                addRecyclerListener(finalView, i)
+            }, 2000)
 
-            addOnTouchListenerForImageView(finalView , i)
+
         }
 
-//        MyWindowCallback().addingListeners(textViewList, buttonList, editTextList, imageButtonList)
-//        for (i in 0 until textViewList!!.size) {
-//            MyWindowCallback.addTextViewListener(textViewList!![i] as TextView, i, activity)
-//        }
-//        for (i in 0 until buttonList!!.size) {
-//            addOnTouchListener(buttonList!![i] as Button, i, activity)
-//
-//        }
 
 
         return true
     }
 
-    private fun addOnTouchListenerForImageView(finalView: AppCompatImageButton, i: Int) {
-        finalView?.setOnTouchListener { view, motionEvent ->
-            Log.i(TextViewFoo, "FirstAddedTOuchListener $view")
+    private fun addRecyclerListener(finalView: RecyclerView, i: Int) {
 
-            when (motionEvent?.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    Log.i(TextViewFoo, " rootViewGroup1 viewcheck ${view?.visibility}")
+
+        for (i in 0 until finalView.childCount) {
+            println("recyclerView Click   traversing")
+            finalView[i].setOnTouchListener { view, motionEvent ->
+                val action = motionEvent.actionMasked
+                var actionCode = ""
+                when (action) {
+                    MotionEvent.ACTION_DOWN -> actionCode = "PRESS"
+                    MotionEvent.ACTION_MOVE -> actionCode = "DRAG"
+                    MotionEvent.ACTION_UP -> actionCode = "RELEASE"
                 }
-                MotionEvent.ACTION_UP -> {
-                    Log.i("ActionUp  ", "ImageButtonView")
+                val index = motionEvent.actionIndex
+
+                when {
+                    actionCode === "PRESS" -> {
+
+                        mouseEventList?.clear()
+                        mouseEventList?.add(
+                            MouseEvent(
+                                System.currentTimeMillis(),
+                                factorForResolutionWidth(motionEvent.getX(index).toInt()),
+                                factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                                actionCode
+                            )
+                        )
+
+                    }
+                    actionCode === "DRAG" -> {
+                        mouseEventList?.add(
+                            MouseEvent(
+                                System.currentTimeMillis(),
+                                factorForResolutionWidth(motionEvent.getX(index).toInt()),
+                                factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                                actionCode
+                            )
+                        )
+                    }
+                    actionCode === "RELEASE" -> {
+
+
+                        mouseEventList?.add(
+                            MouseEvent(
+                                System.currentTimeMillis(),
+                                -1,
+                                -1,
+                                actionCode
+                            )
+                        )
+
+
+                        val rootGlobalRect = Rect()
+                        view.getGlobalVisibleRect(rootGlobalRect);
+                        Log.i(TextViewFoo, " rootViewGroup1 UID ${i}")
+
+                        uId = i
+                        var firstCordinates = arrayOf(view.left, view.top)
+                        var secondCordinates = arrayOf(view.right, view.bottom)
+                        bounds =
+                            "${Arrays.toString(firstCordinates).replace(" ", "")}${
+                                Arrays.toString(
+                                    secondCordinates
+                                ).replace(" ", "")
+                            }"
+
+                        focused = view.isFocused
+                        visible = view.visibility == 0
+                        enabled = view.isEnabled
+                        focusable = view.isFocusable
+                        longClickable = view.isLongClickable
+                        if (view.isScrollContainer) {
+                            scrollable = true
+                        }
+                        isClickable = view.isClickable
+
+//                        view.findViewById<TextView>(view.id)
+                        viewText = ""
+                        xPath = "//hierarchy[1]/"
+                        mclazz = "TextView"
+                        mType = "XCUIElementTypeTextView"
+                        ContentDesc = ""
+                        ActionValue = "--"
+
+                        Password = false
+
+                        app = App(activity)
+                        print("this is Needed + $mType + $mclazz")
+                        var selectedComponent = SelectedComponent(
+                            `package` = app?.packageName,
+                            bounds = bounds.toString(),
+                            uId = uId,
+                            focused = focused,
+                            focusable = focusable,
+                            clickable = isClickable,
+                            enabled = enabled,
+                            longClickable = longClickable,
+                            scrollable = scrollable,
+                            visible = visible,
+///this need to be fix
+                            //                          resourceId =
+//                            app?.packageName + view.findViewById<AppCompatTextView>(
+//                                view.id
+//                            ).toString().split("app")[2].split("}")[0],
+                            resourceId = app?.packageName + ":id/textView",
+                            xpath = xPath,
+                            text = viewText,
+                            clazz = mclazz,
+                            Type = mType,
+                            ContentDesc = ContentDesc,
+                            Password = Password
+
+                        )
+                        var device = DeviceConfigured(
+
+                            true,
+                            "",
+                            d!!.manufacturer,
+                            getScreenResolution(activity),
+                            formatSize(getRamForDevice(activity)),
+                            "DEFAULT",
+                            d!!.manufacturer,
+                            d!!.model,
+                            d!!.board,
+                            System.getProperty("os.arch"),
+                            d!!.osVersion,
+                            Build.VERSION.SDK_INT.toString(),
+                            d!!.device,
+                            "ANDROID"
+                        )
+                        var appInfo = AppInfo(
+                            app?.packageName,
+                            app?.appName,
+                            app?.appVersionCode.toString(),
+                            Build.VERSION.SDK_INT.toString(),
+                            null,
+                            null,
+                            "appIconFile",
+                            "appFile"
+                        )
+                        var action = "CLICK"
+                        get64EncodedString(
+                            writeJSONObjectListener,
+                            selectedComponent,
+                            action,
+                            device,
+                            appInfo
+                        )
+
+
+                    }
+                }
+                true
+            }
+
+        }
+//
+//        finalView?.addOnItemTouchListener(object : AdapterView.OnItemClickListener,
+//            RecyclerView.OnItemTouchListener {
+//
+//            override fun onItemClick(
+//                parent: AdapterView<*>?,
+//                view: View?,
+//                position: Int,
+//                id: Long
+//            ) {
+//                println("recyclerView Click   onItemClick")
+//            }
+//
+//            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+//                println("recyclerView Click   onInterceptTouchEvent ${rv}")
+//
+//                for (i in 0 until rv.childCount) {
+//                    println("recyclerView Click   traversing")
+//                    rv[i].setOnTouchListener { view, motionEvent ->
+//                        val action = motionEvent.actionMasked
+//                        var actionCode = ""
+//                        when (action) {
+//                            MotionEvent.ACTION_DOWN -> actionCode = "PRESS"
+//                            MotionEvent.ACTION_MOVE -> actionCode = "DRAG"
+//                            MotionEvent.ACTION_UP -> actionCode = "RELEASE"
+//                        }
+//                        val index = motionEvent.actionIndex
+//
+//                        when {
+//                            actionCode === "PRESS" -> {
+//
+//                                mouseEventList?.clear()
+//                                mouseEventList?.add(
+//                                    MouseEvent(
+//                                        System.currentTimeMillis(),
+//                                        factorForResolutionWidth(motionEvent.getX(index).toInt()),
+//                                        factorForResolutionLenght(motionEvent.getY(index).toInt()),
+//                                        actionCode
+//                                    )
+//                                )
+//
+//                            }
+//                            actionCode === "DRAG" -> {
+//                                mouseEventList?.add(
+//                                    MouseEvent(
+//                                        System.currentTimeMillis(),
+//                                        factorForResolutionWidth(motionEvent.getX(index).toInt()),
+//                                        factorForResolutionLenght(motionEvent.getY(index).toInt()),
+//                                        actionCode
+//                                    )
+//                                )
+//                            }
+//                            actionCode === "RELEASE" -> {
+//
+//                                val rootGlobalRect = Rect()
+//                                view.getGlobalVisibleRect(rootGlobalRect);
+//                                Log.i(TextViewFoo, " rootViewGroup1 UID ${i}")
+//
+//                                uId = i
+//                                var firstCordinates = arrayOf(view.left, view.top)
+//                                var secondCordinates = arrayOf(view.right, view.bottom)
+//                                bounds =
+//                                    "${Arrays.toString(firstCordinates).replace(" ", "")}${
+//                                        Arrays.toString(
+//                                            secondCordinates
+//                                        ).replace(" ", "")
+//                                    }"
+//
+//                                focused = view.isFocused
+//                                visible = view.visibility == 0
+//                                enabled = view.isEnabled
+//                                focusable = view.isFocusable
+//                                longClickable = view.isLongClickable
+//                                if (view.isScrollContainer) {
+//                                    scrollable = true
+//                                }
+//                                isClickable = view.isClickable
+//
+//                                view.findViewById<TextView>(view.id)
+//                                viewText = (view as TextView).text.toString()
+//                                xPath = "//hierarchy[1]/"
+//                                mclazz = "TextView"
+//                                mType = "XCUIElementTypeTextView"
+//                                ContentDesc = ""
+//                                ActionValue = "--"
+//
+//                                Password = false
+//
+//                                app = App(activity)
+//                                print("this is Needed + $mType + $mclazz")
+//                                var selectedComponent = SelectedComponent(
+//                                    `package` = app?.packageName,
+//                                    bounds = bounds.toString(),
+//                                    uId = uId,
+//                                    focused = focused,
+//                                    focusable = focusable,
+//                                    clickable = isClickable,
+//                                    enabled = enabled,
+//                                    longClickable = longClickable,
+//                                    scrollable = scrollable,
+//                                    visible = visible,
+//                                    resourceId = resourceId,
+//                                    xpath = xPath,
+//                                    text = viewText,
+//                                    clazz = mclazz,
+//                                    Type = mType,
+//                                    ContentDesc = ContentDesc,
+//                                    Password = Password
+//
+//                                )
+//                                var device = DeviceConfigured(
+//
+//                                    true,
+//                                    "",
+//                                    d!!.manufacturer,
+//                                    getScreenResolution(activity),
+//                                    formatSize(getRamForDevice(activity)),
+//                                    "DEFAULT",
+//                                    d!!.manufacturer,
+//                                    d!!.model,
+//                                    d!!.board,
+//                                    System.getProperty("os.arch"),
+//                                    d!!.osVersion,
+//                                    Build.VERSION.SDK_INT.toString(),
+//                                    d!!.device,
+//                                    "ANDROID"
+//                                )
+//                                var appInfo = AppInfo(
+//                                    app?.packageName,
+//                                    app?.appName,
+//                                    app?.appVersionCode.toString(),
+//                                    Build.VERSION.SDK_INT.toString(),
+//                                    null,
+//                                    null,
+//                                    "appIconFile",
+//                                    "appFile"
+//                                )
+//                                var action = "CLICK"
+//                                get64EncodedString(
+//                                    writeJSONObjectListener,
+//                                    selectedComponent,
+//                                    action,
+//                                    device,
+//                                    appInfo
+//                                )
+//
+//
+//                            }
+//                        }
+//                        false
+//                    }
+//
+//                }
+//
+//
+//
+//                return true
+//            }
+//
+//            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+//                println("recyclerView Click   onTouchEvent")
+//
+//            }
+//
+//            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+//                println("recyclerView Click   onRequestDisallowInterceptTouchEvent")
+//
+//            }
+//        }
+//        )
+
+    }
+
+    private fun addImageButtonListener(finalView: AppCompatImageButton, i: Int) {
+        finalView?.setOnTouchListener { view, motionEvent ->
+            val action = motionEvent.actionMasked
+            var actionCode = ""
+            when (action) {
+                MotionEvent.ACTION_DOWN -> actionCode = "PRESS"
+                MotionEvent.ACTION_MOVE -> actionCode = "DRAG"
+                MotionEvent.ACTION_UP -> actionCode = "RELEASE"
+            }
+            val index = motionEvent.actionIndex
+            when {
+                actionCode === "PRESS" -> {
+                    mouseEventList?.clear()
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
+                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            actionCode
+                        )
+                    )
+                    Log.i(TOUCHCALLBACKS, " rootViewGroup1 viewcheck ${view?.visibility}")
+                }
+                actionCode === "DRAG" -> {
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
+                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            actionCode
+                        )
+                    )
+
+                }
+                actionCode === "RELEASE" -> {
+
+
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            -1,
+                            -1,
+                            actionCode
+                        )
+                    )
+
+                    Log.i("ActionUp  ", "Button")
                     val rootGlobalRect = Rect()
                     view.getGlobalVisibleRect(rootGlobalRect);
                     val location = IntArray(2)
-                    Log.i(TextViewFoo, " rootViewGroup1 viewcheck ${view?.visibility}")
+                    Log.i(TOUCHCALLBACKS, " rootViewGroup1 viewcheck ${view?.visibility}")
                     Log.i(
-                        TextViewFoo,
+                        TOUCHCALLBACKS,
                         " rootViewGroup1 viewcheck ${
                             view?.getLocationOnScreen(location).toString()
                         }"
                     )
-                    Log.i(TextViewFoo, " rootViewGroup1 UID ${i}")
-
                     uId = i
-                    val rectf = Rect()
-
-//For coordinates location relative to the parent
-
-//For coordinates location relative to the parent
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 getLocalVisibleRect ${view.getLocalVisibleRect(rectf)}"
-                    )
-//For coordinates location relative to the screen/display
-
-//For coordinates location relative to the screen/display
-
-                    Log.i(
-                        FOO,
-                        " rootViewGroup1 getGlobalVisibleRect ${view.getGlobalVisibleRect(rectf)}"
-                    )
-                    Log.i("left         :", rectf.left.toString());
-                    Log.i("right        :", rectf.right.toString());
-                    Log.i("top          :", rectf.top.toString());
-                    Log.i("bottom       :", rectf.bottom.toString());
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 left ${view.left}"
-                    )
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 Top ${view.top}"
-                    )
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 right ${view.right}"
-                    )
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 bottom ${view.bottom}"
-                    )
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 focus ${view.hasFocus()}"
-                    )
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 visibility ${view.visibility}"
-                    )
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 enable ${view.isEnabled}"
-                    )
-
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 focusable ${view.isFocusable}"
-                    )
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 longclicked ${view.isLongClickable}"
-                    )
-
-                    Log.i(
-                        TextViewFoo,
-                        " rootViewGroup1 clickable ${view.isClickable}"
-                    )
-
                     var firstCordinates = arrayOf(view.left, view.top)
-
-
                     var secondCordinates = arrayOf(view.right, view.bottom)
-
                     bounds =
                         "${Arrays.toString(firstCordinates).replace(" ", "")}${
                             Arrays.toString(
@@ -1595,15 +1831,83 @@ class MyWindowCallback() : Window.Callback {
                     mType = "XCUIElementTypeImageButtonView"
                     ContentDesc = ""
                     // this need to fix after
-                    resourceId= "com.example.myproxywithactivity" +view.findViewById<AppCompatImageButton>(view.id).toString().split("app")[2].split("}")[0]
+                    resourceId =
+                        app?.packageName + view.findViewById<AppCompatImageButton>(
+                            view.id
+                        ).toString().split("app")[2].split("}")[0]
                     ActionValue = "--"
-//                    if (!finalView.inputType.toString() .equals( "129")) {
                     Password = false
-//                    }
 
+                    d = Device(activity)
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            -1,
+                            -1,
+                            actionCode
+                        )
+                    )
+
+                    app = App(activity)
+                    print("this is Needed + $mType + $mclazz")
+                    var selectedComponent = SelectedComponent(
+                        `package` = app?.packageName,
+                        bounds = bounds.toString(),
+                        uId = uId,
+                        focused = focused,
+                        focusable = focusable,
+                        clickable = isClickable,
+                        enabled = enabled,
+                        longClickable = longClickable,
+                        scrollable = scrollable,
+                        visible = visible,
+                        resourceId = resourceId,
+                        xpath = xPath,
+                        text = viewText,
+                        clazz = mclazz,
+                        Type = mType,
+                        ContentDesc = ContentDesc,
+                        Password = Password
+
+                    )
+                    var device = DeviceConfigured(
+
+                        true,
+                        "",
+                        d!!.manufacturer,
+                        getScreenResolution(this.activity),
+                        formatSize(getRamForDevice(this.activity)),
+                        "DEFAULT",
+                        d!!.manufacturer,
+                        d!!.model,
+                        d!!.board,
+                        System.getProperty("os.arch"),
+                        d!!.osVersion,
+                        Build.VERSION.SDK_INT.toString(),
+                        d!!.device,
+                        "ANDROID"
+                    )
+                    var appInfo = AppInfo(
+                        app?.packageName,
+                        app?.appName,
+                        app?.appVersionCode.toString(),
+                        Build.VERSION.SDK_INT.toString(),
+                        null,
+                        null,
+                        "appIconFile",
+                        "appFile"
+                    )
+                    var action = "CLICK"
+                    get64EncodedString(
+                        writeJSONObjectListener,
+                        selectedComponent,
+                        action,
+                        device,
+                        appInfo
+                    )
                 }
             }
-            false
+            true
         }
 
     }
