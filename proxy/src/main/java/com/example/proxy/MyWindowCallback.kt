@@ -16,10 +16,7 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.EditorInfo
 import android.widget.*
 import android.widget.TextView.OnEditorActionListener
-import androidx.appcompat.widget.AppCompatButton
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.*
 import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 import com.an.deviceinfo.device.model.App
@@ -113,8 +110,8 @@ class MyWindowCallback() : Window.Callback {
                     mouseEventList?.add(
                         MouseEvent(
                             System.currentTimeMillis(),
-                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
-                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            factorForResolutionWidth(motionEvent.getX().toInt()),
+                            factorForResolutionLenght(motionEvent.getY().toInt()),
                             actionCode
                         )
                     )
@@ -124,8 +121,8 @@ class MyWindowCallback() : Window.Callback {
                     mouseEventList?.add(
                         MouseEvent(
                             System.currentTimeMillis(),
-                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
-                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            factorForResolutionWidth(motionEvent.getX().toInt()),
+                            factorForResolutionLenght(motionEvent.getY().toInt()),
                             actionCode
                         )
                     )
@@ -371,8 +368,8 @@ class MyWindowCallback() : Window.Callback {
                     mouseEventList?.add(
                         MouseEvent(
                             System.currentTimeMillis(),
-                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
-                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            factorForResolutionWidth(motionEvent.getX().toInt()),
+                            factorForResolutionLenght(motionEvent.getY().toInt()),
                             actionCode
                         )
                     )
@@ -382,8 +379,8 @@ class MyWindowCallback() : Window.Callback {
                     mouseEventList?.add(
                         MouseEvent(
                             System.currentTimeMillis(),
-                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
-                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            factorForResolutionWidth(motionEvent.getX().toInt()),
+                            factorForResolutionLenght(motionEvent.getY().toInt()),
                             actionCode
                         )
                     )
@@ -521,8 +518,8 @@ class MyWindowCallback() : Window.Callback {
                     mouseEventList?.add(
                         MouseEvent(
                             System.currentTimeMillis(),
-                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
-                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            factorForResolutionWidth(motionEvent.getX().toInt()),
+                            factorForResolutionLenght(motionEvent.getY().toInt()),
                             actionCode
                         )
                     )
@@ -531,8 +528,8 @@ class MyWindowCallback() : Window.Callback {
                     mouseEventList?.add(
                         MouseEvent(
                             System.currentTimeMillis(),
-                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
-                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            factorForResolutionWidth(motionEvent.getX().toInt()),
+                            factorForResolutionLenght(motionEvent.getY().toInt()),
                             actionCode
                         )
                     )
@@ -1140,7 +1137,7 @@ class MyWindowCallback() : Window.Callback {
                             clickable = isClickable,
                             enabled = enabled,
                             longClickable = longClickable,
-                             // this is changed for swipe
+                            // this is changed for swipe
                             scrollable = true,
                             visible = visible,
                             resourceId = resourceId,
@@ -1216,8 +1213,8 @@ class MyWindowCallback() : Window.Callback {
 //                            mouseEventList?.add(
 //                                MouseEvent(
 //                                    System.currentTimeMillis(),
-//                                    factorForResolutionWidth(motionEvent.getX(index).toInt()),
-//                                    factorForResolutionLenght(motionEvent.getY(index).toInt()),
+//                                    factorForResolutionWidth(motionEvent.getX().toInt()),
+//                                    factorForResolutionLenght(motionEvent.getY().toInt()),
 //                                    actionCode
 //                                )
 //                            )
@@ -1228,8 +1225,8 @@ class MyWindowCallback() : Window.Callback {
 //                        mouseEventList?.add(
 //                            MouseEvent(
 //                                System.currentTimeMillis(),
-//                                factorForResolutionWidth(motionEvent?.getX(index)?.toInt()!!),
-//                                factorForResolutionLenght(motionEvent?.getY(index)?.toInt()),
+//                                factorForResolutionWidth(motionEvent?.getX()?.toInt()!!),
+//                                factorForResolutionLenght(motionEvent?.getY()?.toInt()),
 //                                actionCode
 //                            )
 //                        )
@@ -1396,6 +1393,10 @@ class MyWindowCallback() : Window.Callback {
             addOnButtonClickListener(finalView, i)
         }
 
+        if (finalView is AppCompatImageView) {
+            addOnImageViewClickListener(finalView, i)
+        }
+
         if (finalView is AppCompatEditText) {
             addSetTextListener(finalView, i)
             addOnEditTextListener(finalView, i)
@@ -1404,7 +1405,7 @@ class MyWindowCallback() : Window.Callback {
             addImageButtonListener(finalView, i)
         }
         if (finalView is RecyclerView) {
-            // Use
+            // Using handler to delay the view
             val handler = Handler()
             handler.postDelayed({
                 addRecyclerListener(finalView, i)
@@ -1412,10 +1413,163 @@ class MyWindowCallback() : Window.Callback {
 
 
         }
+        if (finalView is Menu) {
+
+        }
 
 
 
         return true
+    }
+
+    private fun addOnImageViewClickListener(finalView: AppCompatImageView, i: Int) {
+        finalView?.setOnTouchListener { view, motionEvent ->
+            val action = motionEvent.actionMasked
+            var actionCode = ""
+            when (action) {
+                MotionEvent.ACTION_DOWN -> actionCode = "PRESS"
+                MotionEvent.ACTION_MOVE -> actionCode = "DRAG"
+                MotionEvent.ACTION_UP -> actionCode = "RELEASE"
+            }
+            val index = motionEvent.actionIndex
+            when {
+                actionCode === "PRESS" -> {
+                    mouseEventList?.clear()
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            factorForResolutionWidth(motionEvent.getX().toInt()),
+                            factorForResolutionLenght(motionEvent.getY().toInt()),
+                            actionCode
+                        )
+                    )
+                    Log.i(TOUCHCALLBACKS, " rootViewGroup1 viewcheck ${view?.visibility}")
+                }
+                actionCode === "DRAG" -> {
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            factorForResolutionWidth(motionEvent.getX().toInt()),
+                            factorForResolutionLenght(motionEvent.getY().toInt()),
+                            actionCode
+                        )
+                    )
+
+                }
+                actionCode === "RELEASE" -> {
+
+                    mouseEventList?.add(
+                        MouseEvent(
+                            System.currentTimeMillis(),
+                            -1,
+                            -1,
+                            actionCode
+                        )
+                    )
+
+                    Log.i("ActionUp  ", "Button")
+                    val rootGlobalRect = Rect()
+                    view.getGlobalVisibleRect(rootGlobalRect);
+                    val location = IntArray(2)
+                    Log.i(TOUCHCALLBACKS, " rootViewGroup1 viewcheck ${view?.visibility}")
+                    Log.i(
+                        TOUCHCALLBACKS,
+                        " rootViewGroup1 viewcheck ${
+                            view?.getLocationOnScreen(location).toString()
+                        }"
+                    )
+                    uId = i
+                    var firstCordinates = arrayOf(view.left, view.top)
+                    var secondCordinates = arrayOf(view.right, view.bottom)
+                    bounds = "${Arrays.toString(firstCordinates).replace(" ", "")}${
+                        Arrays.toString(
+                            secondCordinates
+                        ).replace(" ", "")
+                    }"
+
+                    focused = view.isFocused
+                    visible = view.visibility == 0
+                    enabled = view.isEnabled
+                    focusable = view.isFocusable
+                    longClickable = view.isLongClickable
+                    if (view.isScrollContainer) {
+                        scrollable = true
+                    }
+                    isClickable = view.isClickable
+
+                    view.findViewById<ImageView>(view.id)
+
+                    xPath = "//hierarchy[1]/"
+                    mclazz = "ImageView"
+                    mType = "unknown"
+                    ContentDesc = ""
+                    ActionValue = "--"
+                    Password = false
+
+                    d = Device(activity)
+                    app = App(activity)
+                    print("this is Needed + $mType + $mclazz")
+                    var selectedComponent = SelectedComponent(
+                        `package` = app?.packageName,
+                        bounds = bounds.toString(),
+                        uId = uId,
+                        focused = focused,
+                        focusable = focusable,
+                        clickable = isClickable,
+                        enabled = enabled,
+                        longClickable = longClickable,
+                        scrollable = scrollable,
+                        visible = visible,
+                        resourceId =   app?.packageName + view.findViewById<AppCompatImageView>(
+                            view.id
+                        ).toString().split("app")[2].split("}")[0],
+                        xpath = xPath,
+                        text = "",
+                        clazz = mclazz,
+                        Type = mType,
+                        ContentDesc = ContentDesc,
+                        Password = Password
+
+                    )
+                    var device = DeviceConfigured(
+
+                        true,
+                        "",
+                        d!!.manufacturer,
+                        getScreenResolution(this.activity),
+                        formatSize(getRamForDevice(this.activity)),
+                        "DEFAULT",
+                        d!!.manufacturer,
+                        d!!.model,
+                        d!!.board,
+                        System.getProperty("os.arch"),
+                        d!!.osVersion,
+                        Build.VERSION.SDK_INT.toString(),
+                        d!!.device,
+                        "ANDROID"
+                    )
+                    var appInfo = AppInfo(
+                        app?.packageName,
+                        app?.appName,
+                        app?.appVersionCode.toString(),
+                        Build.VERSION.SDK_INT.toString(),
+                        null,
+                        null,
+                        "appIconFile",
+                        "appFile"
+                    )
+                    var action = "CLICK"
+                    get64EncodedString(
+                        writeJSONObjectListener,
+                        selectedComponent,
+                        action,
+                        device,
+                        appInfo
+                    )
+                }
+            }
+            true
+        }
     }
 
     private fun addRecyclerListener(finalView: RecyclerView, i: Int) {
@@ -1440,8 +1594,8 @@ class MyWindowCallback() : Window.Callback {
                         mouseEventList?.add(
                             MouseEvent(
                                 System.currentTimeMillis(),
-                                factorForResolutionWidth(motionEvent.getX(index).toInt()),
-                                factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                                factorForResolutionWidth(motionEvent.getX().toInt()),
+                                factorForResolutionLenght(motionEvent.getY().toInt()),
                                 actionCode
                             )
                         )
@@ -1451,8 +1605,8 @@ class MyWindowCallback() : Window.Callback {
                         mouseEventList?.add(
                             MouseEvent(
                                 System.currentTimeMillis(),
-                                factorForResolutionWidth(motionEvent.getX(index).toInt()),
-                                factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                                factorForResolutionWidth(motionEvent.getX().toInt()),
+                                factorForResolutionLenght(motionEvent.getY().toInt()),
                                 actionCode
                             )
                         )
@@ -1522,7 +1676,12 @@ class MyWindowCallback() : Window.Callback {
 //                            app?.packageName + view.findViewById<AppCompatTextView>(
 //                                view.id
 //                            ).toString().split("app")[2].split("}")[0],
-                            resourceId = app?.packageName + ":id/textView",
+//                            resourceId = app?.packageName + ":id/textView",
+
+
+                            resourceId=  app?.packageName + view.findViewById<AppCompatTextView>(
+                                view.id
+                            ).toString().split("app")[2].split("}")[0],
                             xpath = xPath,
                             text = viewText,
                             clazz = mclazz,
@@ -1609,8 +1768,8 @@ class MyWindowCallback() : Window.Callback {
 //                                mouseEventList?.add(
 //                                    MouseEvent(
 //                                        System.currentTimeMillis(),
-//                                        factorForResolutionWidth(motionEvent.getX(index).toInt()),
-//                                        factorForResolutionLenght(motionEvent.getY(index).toInt()),
+//                                        factorForResolutionWidth(motionEvent.getX().toInt()),
+//                                        factorForResolutionLenght(motionEvent.getY().toInt()),
 //                                        actionCode
 //                                    )
 //                                )
@@ -1620,8 +1779,8 @@ class MyWindowCallback() : Window.Callback {
 //                                mouseEventList?.add(
 //                                    MouseEvent(
 //                                        System.currentTimeMillis(),
-//                                        factorForResolutionWidth(motionEvent.getX(index).toInt()),
-//                                        factorForResolutionLenght(motionEvent.getY(index).toInt()),
+//                                        factorForResolutionWidth(motionEvent.getX().toInt()),
+//                                        factorForResolutionLenght(motionEvent.getY().toInt()),
 //                                        actionCode
 //                                    )
 //                                )
@@ -1763,8 +1922,8 @@ class MyWindowCallback() : Window.Callback {
                     mouseEventList?.add(
                         MouseEvent(
                             System.currentTimeMillis(),
-                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
-                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            factorForResolutionWidth(motionEvent.getX().toInt()),
+                            factorForResolutionLenght(motionEvent.getY().toInt()),
                             actionCode
                         )
                     )
@@ -1774,8 +1933,8 @@ class MyWindowCallback() : Window.Callback {
                     mouseEventList?.add(
                         MouseEvent(
                             System.currentTimeMillis(),
-                            factorForResolutionWidth(motionEvent.getX(index).toInt()),
-                            factorForResolutionLenght(motionEvent.getY(index).toInt()),
+                            factorForResolutionWidth(motionEvent.getX().toInt()),
+                            factorForResolutionLenght(motionEvent.getY().toInt()),
                             actionCode
                         )
                     )
